@@ -1,6 +1,5 @@
 *.tar
 *.csv
-*.json
 *.pyc
 *.out
 *.log
@@ -23,3 +22,5 @@ HeatMap/
 __pycache__/
 
 all-MiniLM-L6-v2/
+result/eval/
+.vscode/
