@@ -8,8 +8,8 @@ from GDesigner.tools.coding.python_executor import PyExecutor
 
 @AgentRegistry.register('CodeWriting')
 class CodeWriting(Node):
-    def __init__(self, id: str | None =None, role:str = None ,domain: str = "", llm_name: str = "",):
-        super().__init__(id, "CodeWriting" ,domain, llm_name)
+    def __init__(self, id: str | None =None, role:str = None ,domain: str = "", llm_name: str = "",llm_size: str="",external_tool_type:str="",external_tool:str="",external_source:str="",):
+        super().__init__(id, "CodeWriting" ,domain, llm_name, llm_size, external_tool_type,external_tool, external_source)
         self.llm = LLMRegistry.get(llm_name)
         self.prompt_set = PromptSetRegistry.get(domain)
         self.role = self.prompt_set.get_role() if role is None else role

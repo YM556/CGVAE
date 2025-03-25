@@ -45,7 +45,10 @@ class Node(ABC):
                  agent_name:str="",
                  domain:str="", 
                  llm_name:str = "",
+                 llm_size:str = "",
+                 external_tool_type:str="",
                  external_tool:str = "",
+                 external_source:str = "",
                  ):
         """
         Initializes a new Node instance.
@@ -54,7 +57,11 @@ class Node(ABC):
         self.agent_name:str = agent_name
         self.domain:str = domain
         self.llm_name:str = llm_name
+        self.llm_size:str = llm_size
         self.external_tool:str = external_tool 
+        self.external_tool_type:str = external_tool_type
+        self.external_source:str = external_source
+
         self.spatial_predecessors: List[Node] = []
         self.spatial_successors: List[Node] = []
         self.temporal_predecessors: List[Node] = []

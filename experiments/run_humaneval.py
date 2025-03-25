@@ -68,6 +68,8 @@ def parse_args():
                         help='The decison method of the GDesigner')
     parser.add_argument('--optimized_spatial',action='store_true')
     parser.add_argument('--optimized_temporal',action='store_true')
+    parser.add_argument('--node_config_file', type=str,default='.\GDesigner\config\humaneval_node_config.json',
+                       help="Path to JSON file containing node configurations.")
     
     args = parser.parse_args()
     result_path = GDesigner_ROOT / "result"
@@ -92,12 +94,15 @@ async def main():
     agent_names = [name for name,num in zip(args.agent_names,args.agent_nums) for _ in range(num)]
     decision_method = args.decision_method
     kwargs = get_kwargs(args.mode,len(agent_names))
+    node_config = get_node_config(args.node_config_file,len(agent_names))
+
     graph = Graph(domain="humaneval",
                   llm_name=args.llm_name,
                   agent_names=agent_names,
                   decision_method=decision_method,
                   optimized_spatial=args.optimized_spatial,
                   optimized_temporal=args.optimized_temporal,
+                  node_kwargs = node_config,
                   **kwargs)
     graph.gcn.train()
     graph.feature_fusion.train()
@@ -180,6 +185,13 @@ async def main():
         print(f"CompletionTokens {CompletionTokens.instance().value}")
 
 
+def get_node_config(config_file:str,agents_num:int):
+    with open(config_file, 'r') as f:
+        node_configs = json.load(f)
+    assert len(node_configs) == agents_num
+    return node_configs
+    
+
 
 def get_kwargs(mode:Union[Literal['DirectAnswer'],Literal['FullConnected'],Literal['Random'],Literal['Chain'],Literal['Debate'],Literal['Layered'],Literal['Star']],
                N:int):
@@ -239,7 +251,7 @@ def get_kwargs(mode:Union[Literal['DirectAnswer'],Literal['FullConnected'],Liter
             "fixed_spatial_masks": fixed_spatial_masks,
             "initial_temporal_probability": initial_temporal_probability,
             "fixed_temporal_masks": fixed_temporal_masks,
-            "node_kwargs":node_kwargs}    
+            }    
 
 if __name__ == '__main__':
     asyncio.run(main())

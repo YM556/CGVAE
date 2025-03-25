@@ -145,7 +145,13 @@ class Graph(ABC):
         features = []
         for node_id in self.nodes:
             external_tool = self.nodes[node_id].external_tool
-            profile = ToolRegistry.get(external_tool).get_description()
+            external_tool_type = self.nodes[node_id].external_tool_type
+            external_source = self.nodes[node_id].external_source
+
+            external_tool_information = ToolRegistry.get(external_tool_type)
+            tool_profile = external_tool_information.get_info_by_mode(external_tool)
+            source_profile = external_tool_information.get_info_by_source(external_source)
+            profile = tool_profile + source_profile
             feature = get_sentence_embedding(profile)
             features.append(feature)
         features = torch.tensor(np.array(features))
@@ -206,7 +212,7 @@ class Graph(ABC):
         for agent_name,kwargs in zip(self.agent_names,self.node_kwargs):
             if agent_name in AgentRegistry.registry:
                 kwargs["domain"] = self.domain
-                kwargs["llm_name"] = self.llm_name
+                # kwargs["llm_name"] = self.llm_name
                 agent_instance = AgentRegistry.get(agent_name, **kwargs)
                 self.add_node(agent_instance)
     
