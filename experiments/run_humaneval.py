@@ -105,8 +105,9 @@ async def main():
                   node_kwargs = node_config,
                   **kwargs)
     graph.gcn.train()
+    graph.gcn_dynamic.train()
     graph.feature_fusion.train()
-    optimizer = torch.optim.Adam(list(graph.gcn.parameters())+list(graph.feature_fusion.parameters()), lr=args.lr)    
+    optimizer = torch.optim.Adam(list(graph.gcn.parameters())+list(graph.gcn_dynamic.parameters())+list(graph.feature_fusion.parameters()), lr=args.lr)    
     
     num_batches = int(len(dataset)/args.batch_size)
     total_solved, total_executed = (0, 0)
