@@ -79,8 +79,10 @@ class Graph(ABC):
         self.role_adj_matrix = self.construct_adj_matrix()
         self.features = self.construct_features()
         self.llm_dynamic_information = Dyllm()
+
         self.llm_feature = self.construct_dynamic_llm_features()
         self.external_feature = self.construct_dynamic_externel_features()
+
         self.feature_fusion = FeatureFusion(True)
         self.gcn = GCN(self.features.size(1)*2,16,self.features.size(1))
         self.gcn_dynamic = GCN(self.features.size(1),16,self.features.size(1))
@@ -154,6 +156,7 @@ class Graph(ABC):
             profile = tool_profile + source_profile
             feature = get_sentence_embedding(profile)
             features.append(feature)
+            
         features = torch.tensor(np.array(features))
         return features
     
