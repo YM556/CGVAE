@@ -155,6 +155,7 @@ class Graph(ABC):
             feature = get_sentence_embedding(profile)
             features.append(feature)
         features = torch.tensor(np.array(features))
+        return features
     
     def construct_new_features(self, query):
         query_embedding = torch.tensor(get_sentence_embedding(query))
@@ -349,7 +350,7 @@ class Graph(ABC):
         logits_static = self.gcn(new_features,self.role_adj_matrix)
         external_features = self.feature_fusion(self.llm_feature,self.external_feature)
         logits_dynamic = self.gcn_dynamic(external_features,self.role_adj_matrix)
-        logits = torch.cat([logits_static,logits_dynamic],dim=0)
+        logits = torch.cat([logits_static,logits_dynamic],dim=1)
         logits = self.mlp(logits)
         self.spatial_logits = logits @ logits.t()
         self.spatial_logits = min_max_norm(torch.flatten(self.spatial_logits))

@@ -33,8 +33,8 @@ class MLP(torch.nn.Module):
 class FeatureFusion(torch.nn.Module):
     def __init__(self,use_softmax=True):
         super().__init__()
-        self.alpha = torch.nn.parameter(torch.tensor(1,dtype=float))
-        self.beta = torch.nn.parameter(torch.tensor(1,dtype=float))
+        self.alpha = torch.nn.Parameter(torch.tensor(1,dtype=float))
+        self.beta = torch.nn.Parameter(torch.tensor(1,dtype=float))
         self.use_softmax = use_softmax
 
     def forward(self,feature_1,feature_2):
