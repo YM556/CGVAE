@@ -6,6 +6,7 @@ import asyncio
 from typing import Union, Literal, List
 import argparse
 import random
+import json
 
 from GDesigner.graph.graph import Graph
 from datasets.mmlu_dataset import MMLUDataset
@@ -14,14 +15,14 @@ from experiments.train_mmlu import train
 from experiments.evaluate_mmlu import evaluate
 from GDesigner.utils.const import GDesigner_ROOT
 
-# import debugpy
-# try:
-#     # 5678 is the default attach port in the VS Code debug configurations. Unless a host and port are specified, host defaults to 127.0.0.1
-#     debugpy.listen(("localhost", 9501))
-#     print("Waiting for debugger attach")
-#     debugpy.wait_for_client()
-# except Exception as e:
-#     pass
+import debugpy
+try:
+    # 5678 is the default attach port in the VS Code debug configurations. Unless a host and port are specified, host defaults to 127.0.0.1
+    debugpy.listen(("localhost", 9501))
+    print("Waiting for debugger attach")
+    debugpy.wait_for_client()
+except Exception as e:
+    pass
 
 
 def parse_args():
@@ -55,6 +56,8 @@ def parse_args():
                         help="the decision method of the final node")
     parser.add_argument('--optimized_spatial',action='store_true')
     parser.add_argument('--optimized_temporal',action='store_true')
+    parser.add_argument('--node_config_file', type=str,default='.\GDesigner\config\mmlu_node_config.json',
+                       help="Path to JSON file containing node configurations.")
     args = parser.parse_args()
     result_path = GDesigner_ROOT / "result"
     os.makedirs(result_path, exist_ok=True)
@@ -71,6 +74,7 @@ async def main():
     agent_names = [name for name,num in zip(args.agent_names,args.agent_nums) for _ in range(num)]
     kwargs = get_kwargs(mode,len(agent_names))
     limit_questions = 153
+    node_config = get_node_config(args.node_config_file,len(agent_names))
     
     graph = Graph(domain=args.domain,
                   llm_name=args.llm_name,
@@ -78,6 +82,7 @@ async def main():
                   decision_method=decision_method,
                   optimized_spatial=args.optimized_spatial,
                   optimized_temporal=args.optimized_temporal,
+                  node_kwargs = node_config,
                   **kwargs)
     download()
     dataset_train = MMLUDataset('dev')
@@ -91,6 +96,12 @@ async def main():
     score = await evaluate(graph=graph,dataset=dataset_val,num_rounds=args.num_rounds,limit_questions=limit_questions,eval_batch_size=args.batch_size)
     print(f"Score: {score}")
 
+
+def get_node_config(config_file:str,agents_num:int):
+    with open(config_file, 'r') as f:
+        node_configs = json.load(f)
+    assert len(node_configs) == agents_num
+    return node_configs
 
 
 def get_kwargs(mode:Union[Literal['DirectAnswer'],Literal['FullConnected'],Literal['Random'],Literal['Chain'],Literal['Debate'],Literal['Layered'],Literal['Star'],Literal['Mesh'],
@@ -165,8 +176,7 @@ def get_kwargs(mode:Union[Literal['DirectAnswer'],Literal['FullConnected'],Liter
     return {"initial_spatial_probability": initial_spatial_probability,
             "fixed_spatial_masks": fixed_spatial_masks,
             "initial_temporal_probability": initial_temporal_probability,
-            "fixed_temporal_masks": fixed_temporal_masks,
-            "node_kwargs":node_kwargs}    
+            "fixed_temporal_masks": fixed_temporal_masks}    
 
 if __name__ == "__main__":
     asyncio.run(main())

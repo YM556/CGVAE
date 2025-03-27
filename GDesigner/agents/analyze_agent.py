@@ -6,14 +6,15 @@ from GDesigner.agents.agent_registry import AgentRegistry
 from GDesigner.llm.llm_registry import LLMRegistry
 from GDesigner.prompt.prompt_set_registry import PromptSetRegistry
 from GDesigner.tools.search.wiki import search_wiki_main
+from GDesigner.tools.search.search_registry import SearchRegistry
 
 def find_strings_between_pluses(text):
     return re.findall(r'\@(.*?)\@', text)
 
 @AgentRegistry.register('AnalyzeAgent')
 class AnalyzeAgent(Node):
-    def __init__(self, id: str | None =None, role:str = None,  domain: str = "", llm_name: str = "",):
-        super().__init__(id, "AnalyzeAgent" ,domain, llm_name)
+    def __init__(self, id: str | None =None, role:str = None ,domain: str = "", llm_name: str = "",llm_size: str="",external_tool_type:str="",external_tool:str="",external_source:str="",):
+        super().__init__(id, "AnalyzeAgent" ,domain, llm_name, llm_size, external_tool_type,external_tool, external_source)
         self.llm = LLMRegistry.get(llm_name)
         self.prompt_set = PromptSetRegistry.get(domain)
         self.role = self.prompt_set.get_role() if role is None else role
@@ -29,11 +30,10 @@ class AnalyzeAgent(Node):
         temporal_str = ""
         for id, info in spatial_info.items():
             # 要求前节点是knoledgable expert，自身是wiki searcher
-            if self.role == 'Wiki Searcher' and info['role']=='Knowlegable Expert':
+            if self.role == 'Wiki Searcher' and info['role']=='Knowlegable Expert' and self.external_tool_type == 'Search':
                 queries = find_strings_between_pluses(info['output'])
-                import pdb;
-                pdb.set_trace()
-                wiki = await search_wiki_main(queries)
+                search_engine = SearchRegistry.get(self.external_tool)
+                wiki = await search_engine.search_batch(queries)
                 if len(wiki):
                     self.wiki_summary = ".\n".join(wiki)
                     user_prompt += f"The key entities of the problem are explained in Wikipedia as follows:{self.wiki_summary}"

@@ -28,8 +28,11 @@ async def train(graph:Graph,
     
     loader = infinite_data_loader()
     
-    optimizer = torch.optim.Adam(graph.gcn.parameters(), lr=lr)    
     graph.gcn.train()
+    graph.gcn_dynamic.train()
+    graph.feature_fusion.train()
+    optimizer = torch.optim.Adam(list(graph.gcn.parameters())+list(graph.gcn_dynamic.parameters())+list(graph.feature_fusion.parameters()), lr=lr)    
+    
     for i_iter in range(num_iters):
         print(f"Iter {i_iter}", 80*'-')
         start_ts = time.time()

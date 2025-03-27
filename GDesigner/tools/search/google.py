@@ -5,14 +5,17 @@ from googlesearch import search
 import asyncio
 import requests
 from bs4 import BeautifulSoup
-import time
+from GDesigner.tools.search.search import Search
+from GDesigner.tools.search.search_registry import SearchRegistry
 
-class GoogleSearch:
+@SearchRegistry.register('Google')
+class GoogleSearch(Search):
     def __init__(self):
+        super().__init__()
         self.name = "Google SearchEngine"
         self.description = "Search for an item in Google"
 
-    def search(self, query):
+    def search(self, query: str) -> str:
         try:
             # 获取前1个搜索结果的URL
             result = list(search(query[:300], num_results=1))
@@ -23,6 +26,12 @@ class GoogleSearch:
         except Exception as e:
             print(f"Google搜索出错: {e}")
             return None
+            
+    async def search_async(self, query: str) -> str:
+        return await search_google(query)
+        
+    async def search_batch(self, queries: list[str]) -> list[str]:
+        return await search_google_main(queries)
     
     def _get_page_content(self, url):
         try:

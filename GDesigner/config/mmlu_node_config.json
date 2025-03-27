@@ -1,0 +1,30 @@
+[
+    {
+        "llm_name": "deepseek-chat",
+        "llm_size": "7B",
+        "external_tool": "Google",
+        "external_tool_type": "Search",
+        "external_source": "Wikipedia"
+    },
+    {
+        "llm_name": "deepseek-chat",
+        "llm_size": "6B",
+        "external_tool": "Baidu",
+        "external_tool_type": "Search",
+        "external_source": "Github"
+    },
+    {
+        "llm_name": "deepseek-chat",
+        "llm_size": "32K",
+        "external_tool": "Wiki",
+        "external_tool_type": "Search",
+        "external_source": "Arxiv"
+    },
+    {
+        "llm_name": "deepseek-chat",
+        "llm_size": "4K",
+        "external_tool": "DuckDuckGo",
+        "external_tool_type": "Search",
+        "external_source": "Google"
+    }
+]

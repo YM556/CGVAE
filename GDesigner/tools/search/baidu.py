@@ -6,13 +6,17 @@ import asyncio
 import requests
 from bs4 import BeautifulSoup
 import time
+from GDesigner.tools.search.search import Search
+from GDesigner.tools.search.search_registry import SearchRegistry
 
-class BaiduSearch:
+@SearchRegistry.register('Baidu')
+class BaiduSearch(Search):
     def __init__(self):
+        super().__init__()
         self.name = "Baidu SearchEngine"
         self.description = "Search for an item in Baidu"
 
-    def search(self, query):
+    def search(self, query: str) -> str:
         try:
             # 获取前1个搜索结果的URL
             results = search(query[:300], num_results=1)
@@ -23,6 +27,12 @@ class BaiduSearch:
         except Exception as e:
             print(f"百度搜索出错: {e}")
             return None
+            
+    async def search_async(self, query: str) -> str:
+        return await search_baidu(query)
+        
+    async def search_batch(self, queries: list[str]) -> list[str]:
+        return await search_baidu_main(queries)
     
     def _get_page_content(self, url):
         try:
