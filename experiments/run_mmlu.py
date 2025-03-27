@@ -24,14 +24,6 @@ try:
     debugpy.wait_for_client()
 except Exception as e:
     pass
-import debugpy
-try:
-    # 5678 is the default attach port in the VS Code debug configurations. Unless a host and port are specified, host defaults to 127.0.0.1
-    debugpy.listen(("localhost", 9501))
-    print("Waiting for debugger attach")
-    debugpy.wait_for_client()
-except Exception as e:
-    pass
 
 
 def parse_args():
@@ -65,10 +57,10 @@ def parse_args():
                         help="the decision method of the final node")
     parser.add_argument('--optimized_spatial',action='store_true')
     parser.add_argument('--optimized_temporal',action='store_true')
-    parser.add_argument('--node_config_file', type=str,default='.\GDesigner\config\humaneval_node_config.json',
+    parser.add_argument('--node_config_file', type=str,default='.\GDesigner\config\mmlu_node_config.json',
                     help="Path to JSON file containing node configurations.")
     parser.add_argument("--phase", choices=["train", "eval"], required=True)
-    parser.add_argument("--eval_group", type=str, default=None, help="评估阶段用的固定组合名")
+    parser.add_argument("--eval_group", type=str, default="group_2", help="评估阶段用的固定组合名")
 
     args = parser.parse_args()
     result_path = GDesigner_ROOT / "result"
