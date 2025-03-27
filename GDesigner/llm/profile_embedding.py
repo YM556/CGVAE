@@ -1,4 +1,6 @@
 from sentence_transformers import SentenceTransformer
+import warnings
+warnings.filterwarnings("ignore", module="transformers")
 
 
 def get_sentence_embedding(sentence):

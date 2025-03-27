@@ -30,3 +30,5 @@ result/
 uv.lock
 .python-version
 pyproject.toml
+
+GDesigner\llm\profile_embedding.py
