@@ -24,6 +24,14 @@ try:
     debugpy.wait_for_client()
 except Exception as e:
     pass
+import debugpy
+try:
+    # 5678 is the default attach port in the VS Code debug configurations. Unless a host and port are specified, host defaults to 127.0.0.1
+    debugpy.listen(("localhost", 9501))
+    print("Waiting for debugger attach")
+    debugpy.wait_for_client()
+except Exception as e:
+    pass
 
 
 def parse_args():
@@ -80,6 +88,7 @@ async def main():
     node_config = get_node_config(args.node_config_file,len(agent_names))
 
     limit_questions = 153
+    node_config = get_node_config(args.node_config_file,len(agent_names))
     
   
     download()
@@ -198,8 +207,8 @@ def get_kwargs(mode:Union[Literal['DirectAnswer'],Literal['FullConnected'],Liter
     return {"initial_spatial_probability": initial_spatial_probability,
             "fixed_spatial_masks": fixed_spatial_masks,
             "initial_temporal_probability": initial_temporal_probability,
-            "fixed_temporal_masks": fixed_temporal_masks,
-          }    
+            "fixed_temporal_masks": fixed_temporal_masks}    
+
 
 if __name__ == "__main__":
     asyncio.run(main())

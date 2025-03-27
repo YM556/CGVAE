@@ -256,7 +256,7 @@ class Graph(ABC):
         """
         Creates and adds new nodes to the graph.
         """
-        for agent_name,kwargs in zip(self.agent_names,self.node_kwargs):
+        for agent_name, kwargs in zip(self.agent_names, self.node_kwargs):
             if agent_name in AgentRegistry.registry:
                 kwargs["domain"] = self.domain
                 # kwargs["llm_name"] = self.llm_name

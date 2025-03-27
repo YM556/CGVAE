@@ -17,7 +17,13 @@ class Dysearch(Dytool):
             '知乎': "知乎是中文问答社区，适合中文任务中获取大众经验、讨论、教程等信息。",
             'Twitter': "Twitter 上的信息高度实时，适合获取突发事件、新闻头条和热门话题。",
             'YouTube': "YouTube 可作为视频内容搜索源，适合多模态任务、教程检索等。",
+            'Baidu': "Baidu 是中国最大的搜索引擎，界面简洁，适合中文搜索任务。",
+            'DuckDuckGo': "DuckDuckGo 是隐私保护的搜索引擎，适合隐私保护、匿名搜索任务。",
+            'Wiki': "Wiki 是半结构化百科全书，适合获取名词解释、知识、学术信息等。",
         }
+        
+    def get_info_by_mode(self, mode: str) -> str:
+        return ''
 
     def get_info_by_source(self, source: str) -> str:
         return self.search_source_info_dict.get(source, f"未知的搜索源类型：{source}。请确认输入是否正确。")

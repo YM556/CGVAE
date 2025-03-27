@@ -25,3 +25,8 @@ all-MiniLM-L6-v2/
 result/eval/
 .vscode/
 model_weights/
+
+result/
+uv.lock
+.python-version
+pyproject.toml
