@@ -51,6 +51,7 @@ class Graph(ABC):
                 initial_temporal_probability: float = 0.5,
                 fixed_temporal_masks:List[List[int]] = None,
                 node_kwargs:List[Dict] = None,
+                allow_random_combination:bool = True
                 ):
         
         if fixed_spatial_masks is None:
@@ -73,6 +74,7 @@ class Graph(ABC):
         self.potential_spatial_edges:List[List[str, str]] = []
         self.potential_temporal_edges:List[List[str,str]] = []
         self.node_kwargs = node_kwargs if node_kwargs is not None else [{} for _ in agent_names]
+        self.allow_random_combination = allow_random_combination
         
         if isinstance(node_kwargs, dict):
             self.all_node_config_groups = node_kwargs
@@ -387,9 +389,17 @@ class Graph(ABC):
     async def arun(self, input: Dict[str,str], 
                   num_rounds:int = 3, 
                   max_tries: int = 3, 
-                  max_time: int = 600,) -> List[Any]:
+                  max_time: int = 600,
+                  fixed_group: Optional[str] = None) -> List[Any]:
         # inputs:{'task':"xxx"}
         group_name = random.choice(list(self._cached_feature_groups.keys()))
+        
+        if self.allow_random_combination:
+            group_name = random.choice(list(self._cached_feature_groups.keys()))
+        else:
+            assert fixed_group is not None, "评估时必须指定 fixed_group"
+            group_name = fixed_group
+
         cached = self._cached_feature_groups[group_name]
         print(f"[Graph] 本轮运行使用组合: {group_name}")
 

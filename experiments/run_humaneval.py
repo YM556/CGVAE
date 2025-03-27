@@ -70,6 +70,9 @@ def parse_args():
     parser.add_argument('--optimized_temporal',action='store_true')
     parser.add_argument('--node_config_file', type=str,default='.\GDesigner\config\humaneval_node_config.json',
                        help="Path to JSON file containing node configurations.")
+    parser.add_argument("--phase", choices=["train", "eval"], required=True)
+    parser.add_argument("--eval_group", type=str, default=None, help="评估阶段用的固定组合名")
+
     
     args = parser.parse_args()
     result_path = GDesigner_ROOT / "result"
@@ -96,95 +99,190 @@ async def main():
     kwargs = get_kwargs(args.mode,len(agent_names))
     node_configs = get_node_config(args.node_config_file,len(agent_names))
 
-
-    graph = Graph(domain="humaneval",
-                  llm_name=args.llm_name,
-                  agent_names=agent_names,
-                  decision_method=decision_method,
-                  optimized_spatial=args.optimized_spatial,
-                  optimized_temporal=args.optimized_temporal,
-                  node_kwargs = node_configs,
-                  **kwargs)
-    graph.gcn.train()
-    graph.gcn_dynamic.train()
-    graph.feature_fusion.train()
-    optimizer = torch.optim.Adam(list(graph.gcn.parameters())+list(graph.gcn_dynamic.parameters())+list(graph.feature_fusion.parameters()), lr=args.lr)    
-    
-    num_batches = int(len(dataset)/args.batch_size)
-    total_solved, total_executed = (0, 0)
-    for i_batch in range(num_batches):
-        print(f"Batch {i_batch}",80*'-')
-        start_ts = time.time()
-        answer_log_probs = []
-        tests = []
+    if args.phase == "train":
+        graph = Graph(domain="humaneval",
+                    llm_name=args.llm_name,
+                    agent_names=agent_names,
+                    decision_method=decision_method,
+                    optimized_spatial=args.optimized_spatial,
+                    optimized_temporal=args.optimized_temporal,
+                    node_kwargs = node_configs,
+                    allow_random_combination=True,
+                    **kwargs)
+        graph.gcn.train()
+        graph.gcn_dynamic.train()
+        graph.feature_fusion.train()
+        optimizer = torch.optim.Adam(list(graph.gcn.parameters())+list(graph.gcn_dynamic.parameters())+list(graph.feature_fusion.parameters()), lr=args.lr)    
         
-        current_batch = dataloader(dataset,args.batch_size,i_batch)
-        if current_batch is None:
-            print("No more data available.")
-            break
-        
-        for i_record, record in enumerate(current_batch):
-            realized_graph = copy.deepcopy(graph)
-            realized_graph.gcn = graph.gcn
-            realized_graph.mlp = graph.mlp
-            task = record["prompt"]
-            test = record["test"]
-            tests.append(test)
-            input_dict = {"task": task}
-            answer_log_probs.append(asyncio.create_task(realized_graph.arun(input_dict,args.num_rounds)))
-        raw_results = await asyncio.gather(*answer_log_probs)
-        raw_answers, log_probs = zip(*raw_results)
-        loss_list: List[torch.Tensor] = []
-        utilities: List[float] = []
-        data = load_result(result_file)
-        
-        for task, answer, log_prob, test in zip(current_batch, raw_answers, log_probs, tests):
-            if not isinstance(answer,list):
-                raise TypeError(f"Expected a list for the answer, but got {type(answer).__name__}")
-            answer = answer[0].lstrip("```python\n").rstrip("\n```")
-            is_solved, _, _ = PyExecutor().execute(answer, [test], timeout=100)
-            total_solved = total_solved + is_solved
-            total_executed = total_executed + 1
-            accuracy = total_solved/ total_executed
-            utility = is_solved
-            utilities.append(utility)
-            single_loss = -log_prob * utility
-            loss_list.append(single_loss)
-            updated_item = {
-                "Question": task,
-                "Tests": test,
-                "Attempt answer": answer,
-                "Solved": is_solved,
-                "Solution": answer,
-                "Total solved": total_solved,
-                "Total executed": total_executed,
-                "Accuracy": accuracy
-            }
-            data.append(updated_item)
-        with open(result_file, 'w',encoding='utf-8') as file:
-            json.dump(data, file, indent=4)
-        
-        total_loss = torch.mean(torch.stack(loss_list))
-        if args.optimized_spatial or args.optimized_temporal:
-            optimizer.zero_grad()
-            total_loss.backward()
-            optimizer.step()
-        print(f"Batch time {time.time() - start_ts:.3f}")
-        print(f"Accuracy: {accuracy}")
-        print("utilities:", utilities)
-        print("loss:", total_loss.item())
-
-        if i_batch+1 == args.num_iterations:
-            args.optimized_spatial = False
-            args.optimized_temporal = False
-            total_solved = 0
-            total_executed = 0
-            graph.gcn.eval()
-            print("Start Eval")
+        num_batches = int(len(dataset)/args.batch_size)
+        total_solved, total_executed = (0, 0)
+        for i_batch in range(args.num_iterations):
+            print(f"Batch {i_batch}",80*'-')
+            start_ts = time.time()
+            answer_log_probs = []
+            tests = []
             
-        print(f"Cost {Cost.instance().value}")
-        print(f"PromptTokens {PromptTokens.instance().value}")
-        print(f"CompletionTokens {CompletionTokens.instance().value}")
+            current_batch = dataloader(dataset,args.batch_size,i_batch)
+            if current_batch is None:
+                print("No more data available.")
+                break
+            
+            for i_record, record in enumerate(current_batch):
+                realized_graph = copy.deepcopy(graph)
+                realized_graph.gcn = graph.gcn
+                realized_graph.mlp = graph.mlp
+                task = record["prompt"]
+                test = record["test"]
+                tests.append(test)
+                input_dict = {"task": task}
+                answer_log_probs.append(asyncio.create_task(realized_graph.arun(input_dict,args.num_rounds)))
+            raw_results = await asyncio.gather(*answer_log_probs)
+            raw_answers, log_probs = zip(*raw_results)
+            loss_list: List[torch.Tensor] = []
+            utilities: List[float] = []
+            data = load_result(result_file)
+            
+            for task, answer, log_prob, test in zip(current_batch, raw_answers, log_probs, tests):
+                if not isinstance(answer,list):
+                    raise TypeError(f"Expected a list for the answer, but got {type(answer).__name__}")
+                answer = answer[0].lstrip("```python\n").rstrip("\n```")
+                is_solved, _, _ = PyExecutor().execute(answer, [test], timeout=100)
+                total_solved = total_solved + is_solved
+                total_executed = total_executed + 1
+                accuracy = total_solved/ total_executed
+                utility = is_solved
+                utilities.append(utility)
+                single_loss = -log_prob * utility
+                loss_list.append(single_loss)
+                updated_item = {
+                    "Question": task,
+                    "Tests": test,
+                    "Attempt answer": answer,
+                    "Solved": is_solved,
+                    "Solution": answer,
+                    "Total solved": total_solved,
+                    "Total executed": total_executed,
+                    "Accuracy": accuracy
+                }
+                data.append(updated_item)
+            with open(result_file, 'w',encoding='utf-8') as file:
+                json.dump(data, file, indent=4)
+            
+            total_loss = torch.mean(torch.stack(loss_list))
+            if args.optimized_spatial or args.optimized_temporal:
+                optimizer.zero_grad()
+                total_loss.backward()
+                optimizer.step()
+            print(f"Batch time {time.time() - start_ts:.3f}")
+            print(f"Accuracy: {accuracy}")
+            print("utilities:", utilities)
+            print("loss:", total_loss.item())
+            # if i_batch+1 == args.num_iterations:
+            #     args.optimized_spatial = False
+            #     args.optimized_temporal = False
+            #     total_solved = 0
+            #     total_executed = 0
+            #     graph.gcn.eval()
+            #     print("Start Eval")
+            print(f"Cost {Cost.instance().value}")
+            print(f"PromptTokens {PromptTokens.instance().value}")
+            print(f"CompletionTokens {CompletionTokens.instance().value}")
+        
+        model_path = Path(f"{GDesigner_ROOT}/model_weights/humaneval")
+        model_path.mkdir(parents=True, exist_ok=True)
+        torch.save({
+            "gcn": graph.gcn.state_dict(),
+            "gcn_dynamic": graph.gcn_dynamic.state_dict(),
+            "feature_fusion": graph.feature_fusion.state_dict()
+        }, f"{GDesigner_ROOT}/model_weights/humaneval/trained_gcn.pt")
+    
+    elif args.phase == "eval":
+        assert args.eval_group is not None, "评估阶段必须指定 --eval_group"
+        graph = Graph(domain="humaneval",
+                    llm_name=args.llm_name,
+                    agent_names=agent_names,
+                    decision_method=decision_method,
+                    optimized_spatial=args.optimized_spatial,
+                    optimized_temporal=args.optimized_temporal,
+                    node_kwargs = node_configs,
+                    allow_random_combination=False,
+                    **kwargs)
+        
+        model_path = f"{GDesigner_ROOT}/model_weights/humaneval/trained_gcn.pt"
+        checkpoint = torch.load(model_path)
+        graph.gcn.load_state_dict(checkpoint["gcn"])
+        graph.gcn_dynamic.load_state_dict(checkpoint["gcn_dynamic"])
+        graph.feature_fusion.load_state_dict(checkpoint["feature_fusion"])
+        print(f"已加载模型参数自 {model_path}")
+
+        graph.gcn.eval()
+        graph.gcn_dynamic.eval()
+        graph.feature_fusion.eval()
+        optimizer = torch.optim.Adam(list(graph.gcn.parameters())+list(graph.gcn_dynamic.parameters())+list(graph.feature_fusion.parameters()), lr=args.lr)    
+        
+        num_batches = int(len(dataset)/args.batch_size)
+        total_solved, total_executed = (0, 0)
+        for i_batch in range(num_batches):
+            print(f"Batch {i_batch}",80*'-')
+            start_ts = time.time()
+            answer_log_probs = []
+            tests = []
+            
+            current_batch = dataloader(dataset,args.batch_size,i_batch)
+            if current_batch is None:
+                print("No more data available.")
+                break
+            
+            for i_record, record in enumerate(current_batch):
+                realized_graph = copy.deepcopy(graph)
+                realized_graph.gcn = graph.gcn
+                realized_graph.mlp = graph.mlp
+                task = record["prompt"]
+                test = record["test"]
+                tests.append(test)
+                input_dict = {"task": task}
+                answer_log_probs.append(asyncio.create_task(realized_graph.arun(input_dict,args.num_rounds,fixed_group=args.eval_group)))
+            raw_results = await asyncio.gather(*answer_log_probs)
+            raw_answers, log_probs = zip(*raw_results)
+            loss_list: List[torch.Tensor] = []
+            utilities: List[float] = []
+            data = load_result(result_file)
+            
+            for task, answer, log_prob, test in zip(current_batch, raw_answers, log_probs, tests):
+                if not isinstance(answer,list):
+                    raise TypeError(f"Expected a list for the answer, but got {type(answer).__name__}")
+                answer = answer[0].lstrip("```python\n").rstrip("\n```")
+                is_solved, _, _ = PyExecutor().execute(answer, [test], timeout=100)
+                total_solved = total_solved + is_solved
+                total_executed = total_executed + 1
+                accuracy = total_solved/ total_executed
+                utility = is_solved
+                utilities.append(utility)
+                single_loss = -log_prob * utility
+                loss_list.append(single_loss)
+                updated_item = {
+                    "Question": task,
+                    "Tests": test,
+                    "Attempt answer": answer,
+                    "Solved": is_solved,
+                    "Solution": answer,
+                    "Total solved": total_solved,
+                    "Total executed": total_executed,
+                    "Accuracy": accuracy
+                }
+                data.append(updated_item)
+            with open(result_file, 'w',encoding='utf-8') as file:
+                json.dump(data, file, indent=4)
+            
+
+            print(f"Batch time {time.time() - start_ts:.3f}")
+            print(f"Accuracy: {accuracy}")
+            print("utilities:", utilities)
+            print(f"Cost {Cost.instance().value}")
+            print(f"PromptTokens {PromptTokens.instance().value}")
+            print(f"CompletionTokens {CompletionTokens.instance().value}")
+
+
 
 def get_node_config(config_file: str, agents_num: int) -> dict:
     with open(config_file, 'r', encoding='utf-8') as f:

@@ -16,14 +16,14 @@ from experiments.train_mmlu import train
 from experiments.evaluate_mmlu import evaluate
 from GDesigner.utils.const import GDesigner_ROOT
 
-# import debugpy
-# try:
-#     # 5678 is the default attach port in the VS Code debug configurations. Unless a host and port are specified, host defaults to 127.0.0.1
-#     debugpy.listen(("localhost", 9501))
-#     print("Waiting for debugger attach")
-#     debugpy.wait_for_client()
-# except Exception as e:
-#     pass
+import debugpy
+try:
+    # 5678 is the default attach port in the VS Code debug configurations. Unless a host and port are specified, host defaults to 127.0.0.1
+    debugpy.listen(("localhost", 9501))
+    print("Waiting for debugger attach")
+    debugpy.wait_for_client()
+except Exception as e:
+    pass
 
 
 def parse_args():
@@ -59,7 +59,9 @@ def parse_args():
     parser.add_argument('--optimized_temporal',action='store_true')
     parser.add_argument('--node_config_file', type=str,default='.\GDesigner\config\humaneval_node_config.json',
                     help="Path to JSON file containing node configurations.")
-    
+    parser.add_argument("--phase", choices=["train", "eval"], required=True)
+    parser.add_argument("--eval_group", type=str, default=None, help="评估阶段用的固定组合名")
+
     args = parser.parse_args()
     result_path = GDesigner_ROOT / "result"
     os.makedirs(result_path, exist_ok=True)
@@ -79,25 +81,36 @@ async def main():
 
     limit_questions = 153
     
-    graph = Graph(domain=args.domain,
-                  llm_name=args.llm_name,
-                  agent_names=agent_names,
-                  decision_method=decision_method,
-                  optimized_spatial=args.optimized_spatial,
-                  optimized_temporal=args.optimized_temporal,
-                  node_kwargs=node_config
-                  **kwargs)
+  
     download()
     dataset_train = MMLUDataset('dev')
     dataset_val = MMLUDataset('val')
     
-    if args.optimized_spatial or args.optimized_temporal:
+    if args.phase == "train":
+        graph = Graph(domain=args.domain,
+                llm_name=args.llm_name,
+                agent_names=agent_names,
+                decision_method=decision_method,
+                optimized_spatial=args.optimized_spatial,
+                optimized_temporal=args.optimized_temporal,
+                node_kwargs=node_config,
+                allow_random_combination=True,
+                **kwargs)
         await train(graph=graph,dataset=dataset_train,num_iters=args.num_iterations,num_rounds=args.num_rounds,
                     lr=args.lr,batch_size=args.batch_size)
         
-    
-    score = await evaluate(graph=graph,dataset=dataset_val,num_rounds=args.num_rounds,limit_questions=limit_questions,eval_batch_size=args.batch_size)
-    print(f"Score: {score}")
+    if args.phase == "eval":
+        graph = Graph(domain=args.domain,
+                llm_name=args.llm_name,
+                agent_names=agent_names,
+                decision_method=decision_method,
+                optimized_spatial=args.optimized_spatial,
+                optimized_temporal=args.optimized_temporal,
+                node_kwargs=node_config,
+                allow_random_combination=False,
+                **kwargs)
+        score = await evaluate(graph=graph,dataset=dataset_val,num_rounds=args.num_rounds,limit_questions=limit_questions,eval_batch_size=args.batch_size,eval_group=args.eval_group)
+        print(f"Score: {score}")
 
 
 def get_node_config(config_file: str, agents_num: int) -> dict:
