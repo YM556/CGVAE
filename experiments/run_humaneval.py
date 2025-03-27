@@ -94,7 +94,8 @@ async def main():
     agent_names = [name for name,num in zip(args.agent_names,args.agent_nums) for _ in range(num)]
     decision_method = args.decision_method
     kwargs = get_kwargs(args.mode,len(agent_names))
-    node_config = get_node_config(args.node_config_file,len(agent_names))
+    node_configs = get_node_config(args.node_config_file,len(agent_names))
+
 
     graph = Graph(domain="humaneval",
                   llm_name=args.llm_name,
@@ -102,7 +103,7 @@ async def main():
                   decision_method=decision_method,
                   optimized_spatial=args.optimized_spatial,
                   optimized_temporal=args.optimized_temporal,
-                  node_kwargs = node_config,
+                  node_kwargs = node_configs,
                   **kwargs)
     graph.gcn.train()
     graph.gcn_dynamic.train()
@@ -185,13 +186,17 @@ async def main():
         print(f"PromptTokens {PromptTokens.instance().value}")
         print(f"CompletionTokens {CompletionTokens.instance().value}")
 
+def get_node_config(config_file: str, agents_num: int) -> dict:
+    with open(config_file, 'r', encoding='utf-8') as f:
+        all_node_configs = json.load(f)
 
-def get_node_config(config_file:str,agents_num:int):
-    with open(config_file, 'r') as f:
-        node_configs = json.load(f)
-    assert len(node_configs) == agents_num
-    return node_configs
-    
+    for combo_name, config_list in all_node_configs.items():
+        if not isinstance(config_list, list):
+            raise TypeError(f"组合 {combo_name} 的配置不是列表类型")
+        assert len(config_list) == agents_num, \
+            f"组合 {combo_name} 的节点数为 {len(config_list)}，但期望为 {agents_num}"
+
+    return all_node_configs
 
 
 def get_kwargs(mode:Union[Literal['DirectAnswer'],Literal['FullConnected'],Literal['Random'],Literal['Chain'],Literal['Debate'],Literal['Layered'],Literal['Star']],

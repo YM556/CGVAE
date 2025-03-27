@@ -27,7 +27,7 @@ async def train(graph:Graph,
                     yield record
     
     loader = infinite_data_loader()
-    
+
     graph.gcn.train()
     graph.gcn_dynamic.train()
     graph.feature_fusion.train()

@@ -1,23 +1,45 @@
-[
-    {
-        "llm_name": "deepseek-chat",
-        "llm_size": "7B",
-        "external_tool": "search_tool_v1",
-        "external_tool_type": "RAG",
-        "external_source": "Wikipedia"
-    },
-    {
-        "llm_name": "chatglm3",
-        "llm_size": "6B",
-        "external_tool": "rag_toolkit_v2",
-        "external_tool_type": "RAG",
-        "external_source": "Github"
-    },
-    {
-        "llm_name": "gpt-4",
-        "llm_size": "32K",
-        "external_tool": "advanced_rag_engine",
-        "external_tool_type": "RAG",
-        "external_source": "Arxiv"
-    }
-]
+{
+    "combination_1":[{
+            "llm_name": "deepseek-chat",
+            "llm_size": "7B",
+            "external_tool": "search_tool_v1",
+            "external_tool_type": "RAG",
+            "external_source": "Wikipedia"
+        },
+        {
+            "llm_name": "deepseek-chat",
+            "llm_size": "6B",
+            "external_tool": "rag_toolkit_v2",
+            "external_tool_type": "RAG",
+            "external_source": "Github"
+        },
+        {
+            "llm_name": "deepseek-chat",
+            "llm_size": "32K",
+            "external_tool": "advanced_rag_engine",
+            "external_tool_type": "RAG",
+            "external_source": "Arxiv"
+        }],
+    "combination_2":[{
+            "llm_name": "deepseek-chat",
+            "llm_size": "7B",
+            "external_tool": "search_tool_v1",
+            "external_tool_type": "RAG",
+            "external_source": "Wikipedia"
+        },
+        {
+            "llm_name": "deepseek-chat",
+            "llm_size": "6B",
+            "external_tool": "rag_toolkit_v2",
+            "external_tool_type": "RAG",
+            "external_source": "Github"
+        },
+        {
+            "llm_name": "deepseek-chat",
+            "llm_size": "32K",
+            "external_tool": "advanced_rag_engine",
+            "external_tool_type": "RAG",
+            "external_source": "Arxiv"
+        }]
+}
+

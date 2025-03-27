@@ -8,6 +8,7 @@ import argparse
 import random
 import json
 
+
 from GDesigner.graph.graph import Graph
 from datasets.mmlu_dataset import MMLUDataset
 from datasets.MMLU.download import download
@@ -58,6 +59,7 @@ def parse_args():
     parser.add_argument('--optimized_temporal',action='store_true')
     parser.add_argument('--node_config_file', type=str,default='.\GDesigner\config\mmlu_node_config.json',
                        help="Path to JSON file containing node configurations.")
+
     args = parser.parse_args()
     result_path = GDesigner_ROOT / "result"
     os.makedirs(result_path, exist_ok=True)
@@ -73,6 +75,8 @@ async def main():
     decision_method = args.decision_method
     agent_names = [name for name,num in zip(args.agent_names,args.agent_nums) for _ in range(num)]
     kwargs = get_kwargs(mode,len(agent_names))
+    node_config = get_node_config(args.node_config_file,len(agent_names))
+
     limit_questions = 153
     node_config = get_node_config(args.node_config_file,len(agent_names))
     
@@ -83,6 +87,7 @@ async def main():
                   optimized_spatial=args.optimized_spatial,
                   optimized_temporal=args.optimized_temporal,
                   node_kwargs = node_config,
+
                   **kwargs)
     download()
     dataset_train = MMLUDataset('dev')
@@ -97,12 +102,18 @@ async def main():
     print(f"Score: {score}")
 
 
-def get_node_config(config_file:str,agents_num:int):
-    with open(config_file, 'r') as f:
-        node_configs = json.load(f)
-    assert len(node_configs) == agents_num
-    return node_configs
+def get_node_config(config_file: str, agents_num: int) -> dict:
+    with open(config_file, 'r', encoding='utf-8') as f:
+        all_node_configs = json.load(f)
 
+    for combo_name, config_list in all_node_configs.items():
+        if not isinstance(config_list, list):
+            raise TypeError(f"组合 {combo_name} 的配置不是列表类型")
+        assert len(config_list) == agents_num, \
+            f"组合 {combo_name} 的节点数为 {len(config_list)}，但期望为 {agents_num}"
+
+    return all_node_configs
+    
 
 def get_kwargs(mode:Union[Literal['DirectAnswer'],Literal['FullConnected'],Literal['Random'],Literal['Chain'],Literal['Debate'],Literal['Layered'],Literal['Star'],Literal['Mesh'],
                           Literal['FakeFullConnected'],Literal['FakeRandom'],Literal['FakeChain'],Literal['FakeStar'],Literal['FakeMesh'],Literal['FakeAGRandom'],Literal['FakeAGFull']],
@@ -177,6 +188,7 @@ def get_kwargs(mode:Union[Literal['DirectAnswer'],Literal['FullConnected'],Liter
             "fixed_spatial_masks": fixed_spatial_masks,
             "initial_temporal_probability": initial_temporal_probability,
             "fixed_temporal_masks": fixed_temporal_masks}    
+
 
 if __name__ == "__main__":
     asyncio.run(main())
