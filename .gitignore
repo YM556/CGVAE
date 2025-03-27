@@ -24,6 +24,7 @@ __pycache__/
 all-MiniLM-L6-v2/
 result/eval/
 .vscode/
+model_weights/
 
 result/
 uv.lock

@@ -10,6 +10,9 @@ import copy
 from GDesigner.graph.graph import Graph
 from experiments.accuracy import Accuracy
 from GDesigner.utils.globals import Cost, PromptTokens, CompletionTokens
+from pathlib import Path
+from GDesigner.utils.const import GDesigner_ROOT
+
 
 async def train(graph:Graph,
             dataset,
@@ -84,4 +87,12 @@ async def train(graph:Graph,
         print(f"Cost {Cost.instance().value}")
         print(f"PromptTokens {PromptTokens.instance().value}")
         print(f"CompletionTokens {CompletionTokens.instance().value}")
+
+    model_path = Path(f"{GDesigner_ROOT}/model_weights/mmlu")
+    model_path.mkdir(parents=True, exist_ok=True)
+    torch.save({
+        "gcn": graph.gcn.state_dict(),
+        "gcn_dynamic": graph.gcn_dynamic.state_dict(),
+        "feature_fusion": graph.feature_fusion.state_dict()
+    }, f"{GDesigner_ROOT}/model_weights/mmlu/trained_gcn.pt")
         

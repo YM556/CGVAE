@@ -10,6 +10,9 @@ import copy
 from GDesigner.graph.graph import Graph
 from experiments.accuracy import Accuracy
 from GDesigner.utils.globals import Cost, PromptTokens, CompletionTokens
+import torch
+from GDesigner.utils.const import GDesigner_ROOT
+
 
 async def evaluate(
         graph:Graph,
@@ -17,11 +20,23 @@ async def evaluate(
         num_rounds:int = 1,
         limit_questions: Optional[int] = None,
         eval_batch_size: int = 4,
+        eval_group:str = None,
         ) -> float:
 
     print(f"Evaluating gdesigner on {dataset.__class__.__name__} split {dataset.split}")
     
     graph.gcn.eval()
+    graph.gcn_dynamic.eval()
+    graph.feature_fusion.eval()
+
+        
+    model_path = f"{GDesigner_ROOT}/model_weights/mmlu/trained_gcn.pt"
+    checkpoint = torch.load(model_path)
+    graph.gcn.load_state_dict(checkpoint["gcn"])
+    graph.gcn_dynamic.load_state_dict(checkpoint["gcn_dynamic"])
+    graph.feature_fusion.load_state_dict(checkpoint["feature_fusion"])
+    print(f"已加载模型参数自 {model_path}")
+
     accuracy = Accuracy()
     def eval_loader(batch_size: int) -> Iterator[List[Any]]:
         records = []
@@ -51,7 +66,7 @@ async def evaluate(
             realized_graph.mlp = graph.mlp
             input_dict = dataset.record_to_input(record)
             # print(input_dict)
-            answer_log_probs.append(asyncio.create_task(realized_graph.arun(input_dict,num_rounds)))
+            answer_log_probs.append(asyncio.create_task(realized_graph.arun(input_dict,num_rounds,fixed_group=eval_group)))
         raw_results = await asyncio.gather(*answer_log_probs)
         raw_answers, log_probs = zip(*raw_results)
         print(f"Batch time {time.time() - start_ts:.3f}")
