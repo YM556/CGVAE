@@ -1,30 +1,58 @@
-[
-    {
-        "llm_name": "deepseek-chat",
-        "llm_size": "7B",
+{
+    "group_1":[{
+        "llm_name": "DeepSeek-V3",
         "external_tool": "Google",
         "external_tool_type": "Search",
-        "external_source": "Wikipedia"
+        "external_source": "Google",
+        "role": "Knowlegable Expert"
     },
     {
-        "llm_name": "deepseek-chat",
-        "llm_size": "6B",
+        "llm_name": "DeepSeek-R1",
         "external_tool": "Baidu",
         "external_tool_type": "Search",
-        "external_source": "Github"
+        "external_source": "Baidu",
+        "role": "Critic"
     },
     {
-        "llm_name": "deepseek-chat",
-        "llm_size": "32K",
+        "llm_name": "DeepSeek-V3",
         "external_tool": "Wiki",
         "external_tool_type": "Search",
-        "external_source": "Arxiv"
+        "external_source": "Wiki",
+        "role": "Wiki Searcher"
     },
     {
-        "llm_name": "deepseek-chat",
-        "llm_size": "4K",
+        "llm_name": "DeepSeek-V3",
         "external_tool": "DuckDuckGo",
         "external_tool_type": "Search",
-        "external_source": "Google"
-    }
-]
+        "external_source": "DuckDuckGo",
+        "role": "Wiki Searcher"
+    }],
+    "group_2":[{
+        "llm_name": "DeepSeek-V3",
+        "external_tool": "Google",
+        "external_tool_type": "Search",
+        "external_source": "Google",
+        "role":"Knowlegable Expert"
+    },
+    {
+        "llm_name": "DeepSeek-V3",
+        "external_tool": "Google",
+        "external_tool_type": "Search",
+        "external_source": "Google",
+        "role":"Wiki Searcher"
+    },
+    {
+        "llm_name": "DeepSeek-R1",
+        "external_tool": "Wiki",
+        "external_tool_type": "Search",
+        "external_source": "Wiki",
+        "role":"Critic"
+    },
+    {
+        "llm_name": "DeepSeek-R1",
+        "external_tool": "DuckDuckGo",
+        "external_tool_type": "Search",
+        "external_source": "DuckDuckGo",
+        "role":"Mathematician"
+    }]
+}
