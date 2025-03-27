@@ -7,7 +7,7 @@ from GDesigner.prompt.common import get_combine_materials
 
 
 roles = itertools.cycle(['Knowlegable Expert',
-                        #  'Wiki Searcher',
+                         'Wiki Searcher',
                          'Critic',
                          'Mathematician',
                          'Psychologist',
@@ -22,7 +22,8 @@ ROLE_DESCRIPTION = {
 "Knowlegable Expert":
 """
 You are a knowlegable expert in question answering.
-Please give several key entities that need to be searched in wikipedia to solve the problem, for example: catfish effect, broken window effect, Shakespeare.
+Please give several key entities that need to be searched in wikipedia to solve the problem. Each entity must be wrapped with @ symbols.
+For example: @catfish effect@, @broken window effect@, @Shakespeare@.
 If there is no entity in the question that needs to be searched in Wikipedia, you don't have to provide it
 """,
 "Wiki Searcher":
@@ -76,26 +77,29 @@ You are a liar who only tell lies.
 """,
 }
 
-ROLE_CONNECTION = [('Knowlegable Expert','Mathematician'),
-                   ('Knowlegable Expert','Economist'),
-                   ('Knowlegable Expert','Lawyer'),
-                   ('Knowlegable Expert','Critic'),
-                   ('Knowlegable Expert','Psychologist'),
-                   ('Knowlegable Expert','Doctor'),
-                   ('Knowlegable Expert','Historian'),
-                   ('Knowlegable Expert','Programmer'),
-                   ('Knowlegable Expert','Critic'),
-                   ('Mathematician','Critic'),
-                   ('Mathematician','Critic'),
-                   ('Psychologist','Critic'),
-                   ('Economist','Lawyer'),
-                   ('Lawyer','Critic'),
-                   ('Critic','Psychologist'),
-                   ('Psychologist','Doctor'),
-                   ('Doctor','Historian'),
-                   ('Historian','Knowlegable Expert'),
-                   ('Programmer','Mathematician'),
-                   ('Programmer','Knowlegable Expert'),
+ROLE_CONNECTION = [ ('Knowlegable Expert','Wiki Searcher'),
+                    ('Wiki Searcher','Critic'),
+                    ('Wiki Searcher','Mathematician'),
+                    ('Wiki Searcher','Psychologist'),
+                    ('Wiki Searcher','Historian'),
+                    ('Wiki Searcher','Doctor'),
+                    ('Wiki Searcher','Lawyer'),
+                    ('Wiki Searcher','Economist'),
+                    ('Wiki Searcher','Programmer'),
+                    ('Mathematician','Critic'),
+                    ('Psychologist','Critic'),
+                    ('Historian','Critic'),
+                    ('Doctor','Critic'),
+                    ('Lawyer','Critic'),
+                    ('Economist','Critic'),
+                    ('Programmer','Critic'),
+                    ('Economist','Lawyer'),
+                    ('Critic','Psychologist'),
+                    ('Psychologist','Doctor'),
+                    ('Doctor','Historian'),
+                    ('Historian','Knowlegable Expert'),
+                    ('Programmer','Mathematician'),
+                    ('Programmer','Knowlegable Expert'),
                     ('Mathematician','Programmer'),
                     ('Programmer','Economist'),
                     ('Economist','Psychologist'),
@@ -105,7 +109,6 @@ ROLE_CONNECTION = [('Knowlegable Expert','Mathematician'),
                     ('Lawyer','Knowlegable Expert'),
                     ('Doctor','Lawyer'),
                     ('Mathematician','Doctor'),
-                    ('Programmer','Critic'),
                     ('Economist','Doctor'),
                     ('Lawyer','Critic'),
                     ('Psychologist','Lawyer'),

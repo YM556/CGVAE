@@ -3,13 +3,17 @@
 
 import wikipedia
 import asyncio
+from GDesigner.tools.search.search import Search
+from GDesigner.tools.search.search_registry import SearchRegistry
 
-class WikiSearch:
+@SearchRegistry.register('Wiki')
+class WikiSearch(Search):
     def __init__(self):
+        super().__init__()
         self.name = "Wikipedia SearchEngine"
         self.description = "Seach for an item in Wikipedia"
 
-    def search(self, query):
+    def search(self, query: str) -> str:
         result = wikipedia.search(query[:300], results=1, suggestion=True)
         print(result)
         if len(result[0]) != 0:
@@ -20,6 +24,12 @@ class WikiSearch:
             return wikipedia.page(title=result[0]).content
         
         return None
+        
+    async def search_async(self, query: str) -> str:
+        return await search_wiki(query)
+        
+    async def search_batch(self, queries: list[str]) -> list[str]:
+        return await search_wiki_main(queries)
 
 async def get_wikipedia_summary(title):
     try:

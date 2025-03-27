@@ -17,11 +17,6 @@ BASE_URL = ''
 load_dotenv()
 MINE_BASE_URL = os.getenv('BASE_URL')
 MINE_API_KEYS = os.getenv('API_KEY')
-# MINE_BASE_URL = 'https://api.deepseek.com/chat/completions'
-# MINE_API_KEYS = 'sk-0a3494ee0ae344b8905416f8d0b74053'
-
-# MINE_BASE_URL = "https://api.siliconflow.cn/v1/chat/completions"
-# MINE_API_KEYS = 'sk-gqnlckaissirjxaghjwphqywmrsgignvaglpdsjvprjxwrvv'
 
 @retry(wait=wait_random_exponential(max=100), stop=stop_after_attempt(3))
 async def achat(
