@@ -19,7 +19,6 @@ load_dotenv()
 MINE_BASE_URL = os.getenv('BASE_URL')
 MINE_API_KEYS = os.getenv('API_KEY')
 
-client = Together(api_key='159c9dc94810155413c9c4c7b2022eb232fc90e0d8f781d382604d029fd51b4b')
 
 @retry(wait=wait_random_exponential(max=100), stop=stop_after_attempt(3))
 async def achat(
@@ -30,6 +29,7 @@ async def achat(
     :param text:
     :return:
     """
+    client = Together(api_key=MINE_API_KEYS)
     response = client.chat.completions.create(
         model=model,
         messages=msg,
