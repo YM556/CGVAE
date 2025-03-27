@@ -54,14 +54,9 @@ async def achat(
 
             prompt = "".join([item['content'] for item in msg])
 
-            # 这里好像deepseek 计算不了
-            # cost_count(prompt, reply, model)
-
             return reply 
 
-            # prompt = "".join([item['content'] for item in msg])
-            # cost_count(prompt,response_data['data'],model)
-            # return response_data['data']
+
 
 @LLMRegistry.register('GPTChat')
 class GPTChat(LLM):

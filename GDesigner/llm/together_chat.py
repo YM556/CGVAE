@@ -44,8 +44,6 @@ async def achat(
         temperature=0.8,
         top_p=0.95
     )
-    import pdb
-    pdb.set_trace()
 
     choices_list = response.choices
 

@@ -14,6 +14,8 @@ class LLMRegistry:
         "QwQ-32B": "Qwen/QwQ-32B",
         "Qwen2.5-Coder-32B": "Qwen/Qwen2.5-Coder-32B-Instruct",
         "Qwen2.5-72B": "Qwen/Qwen2.5-72B-Instruct-128K",
+        "gpt-4o-mini" : "gpt-4o-mini",
+        "llama-3-70b" : "meta-llama/Llama-3-70b-chat-hf"
     }
 
     @classmethod
