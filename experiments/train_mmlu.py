@@ -31,7 +31,8 @@ async def train(graph:Graph,
     graph.gcn.train()
     graph.gcn_dynamic.train()
     graph.feature_fusion.train()
-    optimizer = torch.optim.Adam(list(graph.gcn.parameters())+list(graph.gcn_dynamic.parameters())+list(graph.feature_fusion.parameters()), lr=lr)    
+    optimizer = torch.optim.Adam(list(graph.gcn.parameters())+list(graph.gcn_dynamic.parameters())+list(graph.feature_fusion.parameters()), lr=lr)
+    total_accuracy = Accuracy()    
     
     for i_iter in range(num_iters):
         print(f"Iter {i_iter}", 80*'-')
@@ -62,6 +63,7 @@ async def train(graph:Graph,
                     f"String expected but got {correct_answer} of type {type(correct_answer)} (1)"
             accuracy = Accuracy()
             accuracy.update(answer, correct_answer)
+            total_accuracy.update(answer, correct_answer)
             utility = accuracy.get()
             utilities.append(utility)
             single_loss = - log_prob * utility
@@ -75,6 +77,7 @@ async def train(graph:Graph,
 
         print("raw_answers:",raw_answers)
         print("answers:",answers)
+        print("total_accuracy:", total_accuracy.get())
         print(f"Batch time {time.time() - start_ts:.3f}")
         print("utilities:", utilities) # [0.0, 0.0, 0.0, 1.0]
         print("loss:", total_loss.item()) # 4.6237263679504395
