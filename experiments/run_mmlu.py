@@ -85,6 +85,7 @@ async def main():
                   decision_method=decision_method,
                   optimized_spatial=args.optimized_spatial,
                   optimized_temporal=args.optimized_temporal,
+                  node_kwargs=node_config
                   **kwargs)
     download()
     dataset_train = MMLUDataset('dev')
@@ -99,11 +100,17 @@ async def main():
     print(f"Score: {score}")
 
 
-def get_node_config(config_file:str,agents_num:int):
-    with open(config_file, 'r') as f:
-        node_configs = json.load(f)
-    assert len(node_configs) == agents_num
-    return node_configs
+def get_node_config(config_file: str, agents_num: int) -> dict:
+    with open(config_file, 'r', encoding='utf-8') as f:
+        all_node_configs = json.load(f)
+
+    for combo_name, config_list in all_node_configs.items():
+        if not isinstance(config_list, list):
+            raise TypeError(f"组合 {combo_name} 的配置不是列表类型")
+        assert len(config_list) == agents_num, \
+            f"组合 {combo_name} 的节点数为 {len(config_list)}，但期望为 {agents_num}"
+
+    return all_node_configs
     
 
 def get_kwargs(mode:Union[Literal['DirectAnswer'],Literal['FullConnected'],Literal['Random'],Literal['Chain'],Literal['Debate'],Literal['Layered'],Literal['Star'],Literal['Mesh'],
