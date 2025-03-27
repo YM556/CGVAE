@@ -47,6 +47,6 @@ class LLMRegistry:
         if MY_SERVER == 'together':
             model = cls.registry.get('together')
         else: 
-            model = cls.registry.get('GPTChat', model_name)
+            model = cls.registry.get('TogetherChat', model_name)
 
         return model
