@@ -31,6 +31,6 @@ class LLMRegistry:
         if model_name == 'mock':
             model = cls.registry.get(model_name)
         else: 
-            model = cls.registry.get('GPTChat', model_name)
+            model = cls.registry.get('TogetherChat', model_name)
 
         return model
