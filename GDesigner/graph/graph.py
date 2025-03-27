@@ -15,6 +15,8 @@ from torch_geometric.utils import dense_to_sparse
 from GDesigner.dynamic.llm_information import Dyllm
 from GDesigner.dynamic.dytool_registry import ToolRegistry
 
+import random
+
 class Graph(ABC):
     """
     A framework for managing and executing a network of nodes using a language model.
@@ -72,20 +74,31 @@ class Graph(ABC):
         self.potential_temporal_edges:List[List[str,str]] = []
         self.node_kwargs = node_kwargs if node_kwargs is not None else [{} for _ in agent_names]
         
-        self.init_nodes() # add nodes to the self.nodes
-        self.init_potential_edges() # add potential edges to the self.potential_spatial/temporal_edges
-        
+        if isinstance(node_kwargs, dict):
+            self.all_node_config_groups = node_kwargs
+        else:
+            self.all_node_config_groups = {"default": node_kwargs}
+
+        self._cached_feature_groups = {}  # 缓存特征向量
+        self.nodes = {}
+        self.node_kwargs = []  # 先不初始化，延后根据组合选择
+
         self.prompt_set = PromptSetRegistry.get(domain)
-        self.role_adj_matrix = self.construct_adj_matrix()
-        self.features = self.construct_features()
         self.llm_dynamic_information = Dyllm()
 
-        self.llm_feature = self.construct_dynamic_llm_features()
-        self.external_feature = self.construct_dynamic_externel_features()
+        self.prepare_feature_cache_for_all_combinations()
+
+        # self.init_nodes() # add nodes to the self.nodes
+        # self.init_potential_edges() # add potential edges to the self.potential_spatial/temporal_edges
+        # self.role_adj_matrix = self.construct_adj_matrix()
+        # self.features = self.construct_features()
+        
+        # self.llm_feature = self.construct_dynamic_llm_features()
+        # self.external_feature = self.construct_dynamic_externel_features()
 
         self.feature_fusion = FeatureFusion(True)
-        self.gcn = GCN(self.features.size(1)*2,16,self.features.size(1))
-        self.gcn_dynamic = GCN(self.features.size(1),16,self.features.size(1))
+        self.gcn = GCN(768,16,384)
+        self.gcn_dynamic = GCN(384,16,384)
         self.mlp = MLP(768,16,16)
 
         init_spatial_logit = torch.log(torch.tensor(initial_spatial_probability / (1 - initial_spatial_probability))) if optimized_spatial else 10.0
@@ -97,7 +110,33 @@ class Graph(ABC):
         self.temporal_logits = torch.nn.Parameter(torch.ones(len(self.potential_temporal_edges), requires_grad=optimized_temporal) * init_temporal_logit,
                                                  requires_grad=optimized_temporal) # trainable edge logits
         self.temporal_masks = torch.nn.Parameter(fixed_temporal_masks,requires_grad=False)  # fixed edge masks
+
+    def prepare_feature_cache_for_all_combinations(self):
+        for group_name, node_config in self.all_node_config_groups.items():
+            print(f"[Graph] 缓存组合 {group_name} 的特征中...")
+            self.init_with_node_config(node_config)
+            features = self.construct_features()
+            llm_feature = self.construct_dynamic_llm_features()
+            external_feature = self.construct_dynamic_externel_features()
+
+            self._cached_feature_groups[group_name] = {
+                "features": features,
+                "llm_feature": llm_feature,
+                "external_feature": external_feature,
+                "node_config": node_config
+            }
     
+    def init_with_node_config(self, node_config: List[Dict]):
+        self.node_kwargs = node_config
+        self.nodes = {}
+        self.potential_spatial_edges = []
+        self.potential_temporal_edges = []
+
+        self.init_nodes()
+        self.init_potential_edges()
+        self.role_adj_matrix = self.construct_adj_matrix()
+
+
     def construct_adj_matrix(self):
         role_connect:List[Tuple[str,str]] = self.prompt_set.get_role_connection()
         num_nodes = self.num_nodes
@@ -137,7 +176,9 @@ class Graph(ABC):
         features = []
         for node_id in self.nodes:
             llm_name = self.nodes[node_id].llm_name
-            profile = self.llm_dynamic_information.get_llm_size_information(llm_name)
+            # llm_size = self.nodes[node_id].llm_size
+            llm_name = self.nodes[node_id].llm_name.split('/')[-1]
+            profile = self.llm_dynamic_information.get_llm_feature_information(llm_name)
             feature = get_sentence_embedding(profile)
             features.append(feature)
         features = torch.tensor(np.array(features))
@@ -156,7 +197,7 @@ class Graph(ABC):
             profile = tool_profile + source_profile
             feature = get_sentence_embedding(profile)
             features.append(feature)
-            
+
         features = torch.tensor(np.array(features))
         return features
     
@@ -348,6 +389,16 @@ class Graph(ABC):
                   max_tries: int = 3, 
                   max_time: int = 600,) -> List[Any]:
         # inputs:{'task':"xxx"}
+        group_name = random.choice(list(self._cached_feature_groups.keys()))
+        cached = self._cached_feature_groups[group_name]
+        print(f"[Graph] 本轮运行使用组合: {group_name}")
+
+        self.init_with_node_config(cached["node_config"])
+        self.features = cached["features"]
+        self.llm_feature = cached["llm_feature"]
+        self.external_feature = cached["external_feature"]
+
+
         log_probs = 0
         new_features = self.construct_new_features(input['task'])
         logits_static = self.gcn(new_features,self.role_adj_matrix)

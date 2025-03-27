@@ -1,114 +1,35 @@
 class Dyllm:
     def __init__(self):
         self.llm_info = {
-            # OpenAI Series
-            "GPT-4.5": {
-                "size": "Unknown (estimated ~2T parameters)",
-                "features": ["Enhanced reasoning", "Improved coding", "Better multilingual support"],
-                "company": "OpenAI"
-            },
-            "GPT-4": {
-                "size": "1.76T parameters",
-                "features": ["Strong reasoning", "Code generation", "Multi-modal capabilities"],
-                "company": "OpenAI"
-            },
-            "GPT-3.5": {
-                "size": "175B parameters",
-                "features": ["Text generation", "Code completion", "Translation"],
-                "company": "OpenAI"
-            },
+            # OpenAI 系列
+            "GPT-4.5": "GPT-4.5 是 OpenAI 最新一代模型，参数量估计接近 2 万亿，具备增强的推理能力、编程能力提升和更强的多语言支持能力，表现优异，适合多种高复杂度任务。",
+            "GPT-4": "GPT-4 拥有 1.76 万亿参数，具备强大的推理与代码生成能力，并支持多模态输入，能够在复杂对话和多任务处理方面展现优秀表现。",
+            "GPT-3.5": "GPT-3.5 拥有 1750 亿参数，擅长文本生成、代码补全和语言翻译，适用于日常应用和轻量级任务，但在复杂推理方面不如 GPT-4。",
 
-            # xAI (Grok Series)
-            "Grok-3": {
-                "size": "314B parameters",
-                "features": ["Real-time knowledge", "Sarcasm detection", "X platform integration"],
-                "company": "xAI"
-            },
-            "Grok-2": {
-                "size": "Unknown (smaller than Grok-3)",
-                "features": ["Basic reasoning", "Conversational AI", "Limited context length"],
-                "company": "xAI"
-            },
+            # xAI 系列
+            "Grok-3": "Grok-3 是 xAI 发布的大型语言模型，参数量为 3140 亿，支持实时知识更新、讽刺识别和 X 平台集成，适用于对实时性和语气理解有要求的场景。",
 
-            # Google (Gemini Series)
-            "Gemini 2.0": {
-                "size": "Unknown (multi-modal)",
-                "features": ["Advanced reasoning", "Long-context processing", "Multi-modal (text, image, audio)"],
-                "company": "Google"
-            },
-            "Gemini 1.5 Pro": {
-                "size": "Unknown",
-                "features": ["200K+ context window", "Multi-modal", "Efficient fine-tuning"],
-                "company": "Google"
-            },
+            # Meta LLaMA 系列
+            "Llama-3.1-405B": "Llama-3.1-405B 是 Meta 开源的大模型，拥有 4050 亿参数，支持多语言和长上下文处理，适合多轮对话和跨语言任务，推理能力稳定可靠。",
+            "Llama-2-13B": "Llama-2-13B 是 Meta 发布的中型开源模型，具有良好的文本生成和推理能力，适合部署在资源受限的服务器上进行本地推理。",
 
-            # Anthropic (Claude Series)
-            "Claude-3.5-Sonnet": {
-                "size": "Unknown",
-                "features": ["Strong reasoning", "Safety alignment", "Optimized for long conversations"],
-                "company": "Anthropic"
-            },
-            "Claude-3.7": {
-                "size": "Unknown",
-                "features": ["Faster inference", "Long-context handling", "Complex task optimization"],
-                "company": "Anthropic"
-            },
-            "Claude 3 Opus": {
-                "size": "Unknown",
-                "features": ["Top-tier reasoning", "200K+ context", "Human-like understanding"],
-                "company": "Anthropic"
-            },
+            # Google Gemini 系列
+            "Gemini 1.5 Pro": "Gemini 1.5 Pro 是 Google 的多模态模型，具备超长上下文窗口（超过 200K tokens）和跨模态处理能力，适合视频、图像、文本混合任务。",
+            
+            # 阿里巴巴 Qwen 系列
+            "Qwen2-72B": "Qwen2-72B 是阿里巴巴开源模型，拥有 720 亿参数，支持 27 种语言，具有 128K 上下文长度，广泛用于代码生成和多语言问答任务。",
+            "Qwen1.5-1.8B": "Qwen1.5-1.8B 是轻量级模型，参数仅 18 亿，适合边缘设备和小型本地部署，虽然性能有限，但推理速度快、资源占用低。",
 
-            # DeepSeek Series
-            "DeepSeek-V3": {
-                "size": "671B parameters (37B active)",
-                "features": ["MoE architecture", "Efficient inference", "Low training cost"],
-                "company": "DeepSeek"
-            },
-            "DeepSeek-R1": {
-                "size": "Unknown (optimized for inference)",
-                "features": ["Reinforcement learning", "Low-cost inference", "Open-source"],
-                "company": "DeepSeek"
-            },
+            # DeepSeek 系列
+            "DeepSeek-V3": "DeepSeek-V3 使用 MoE 架构，总参数量 6710 亿，激活参数为 37 亿，具备高效率、低延迟的推理能力，适合大规模服务部署。",
+            "DeepSeek-R1": "DeepSeek-R1 是 DeepSeek 推出的推理优化模型，采用强化学习技术进行微调，主打高效推理与低资源消耗，适合大规模推理部署场景。尽管参数量未公布，但该模型在多个推理任务上展现出良好的性价比。",
 
-            # Alibaba (Qwen Series)
-            "Qwen2-72B": {
-                "size": "72B parameters",
-                "features": ["Open-source", "128K context", "Multilingual (27+ languages)"],
-                "company": "Alibaba"
-            },
-            "Qwen2.5-Max": {
-                "size": "Unknown (MoE-based)",
-                "features": ["Multi-modal", "Long-context", "Open-source"],
-                "company": "Alibaba"
-            },
+            # 01.AI Yi 系列
+            "Yi-34B": "Yi-34B 是 01.AI 推出的中文优化模型，参数量 340 亿，在中文理解和生成任务上表现出色，同时支持英文问答与多轮对话。",
 
-            # 01.AI (Yi Series)
-            "Yi-Large": {
-                "size": "Unknown (Preview)",
-                "features": ["Strong benchmarks", "200K+ context", "Vision-language support"],
-                "company": "01.AI"
-            },
-
-            # Meta (Llama Series)
-            "Llama-3.1-405B": {
-                "size": "405B parameters",
-                "features": ["Open-source", "Multilingual", "Long-context handling"],
-                "company": "Meta"
-            },
+            # 百川 Baichuan 系列
+            "Baichuan2-13B": "Baichuan2-13B 是百川智能推出的中型模型，优化中文语义理解，适用于问答、摘要、搜索等通用任务，参数量为 130 亿。"
         }
-    
-    def get_llm_size_information(self, model_name):
-        if model_name in self.llm_info:
-            return self.llm_info[model_name]["size"]
-        return "Model information not found"
-    
-    def get_llm_feature_information(self, model_name):
-        if model_name in self.llm_info:
-            return self.llm_info[model_name]["features"]
-        return "Model information not found"
-    
-    def get_llm_company_information(self, model_name):
-        if model_name in self.llm_info:
-            return self.llm_info[model_name]["company"]
-        return "Model information not found"
+
+    def get_llm_feature_information(self, llm_name):
+        return self.llm_info.get(llm_name, "Model information not found.")
