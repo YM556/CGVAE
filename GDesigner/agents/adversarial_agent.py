@@ -6,7 +6,6 @@ from GDesigner.graph.node import Node
 from GDesigner.agents.agent_registry import AgentRegistry
 from GDesigner.llm.llm_registry import LLMRegistry
 from GDesigner.prompt.prompt_set_registry import PromptSetRegistry
-from GDesigner.tools.search.wiki import search_wiki_main
 
 
 @AgentRegistry.register('AdverarialAgent')

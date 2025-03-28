@@ -50,7 +50,7 @@ async def achat(
             if choices:
                 reply = choices[0].get('message', {}).get('content', '')  # ✅ 确保获取到文本内容
             else:
-                reply = "API 没有返回有效内容"
+                reply = f"API 没有返回有效内容 {data}"
 
             prompt = "".join([item['content'] for item in msg])
 

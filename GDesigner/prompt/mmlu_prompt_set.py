@@ -22,13 +22,13 @@ ROLE_DESCRIPTION = {
 "Knowlegable Expert":
 """
 You are a knowlegable expert in question answering.
-Please give several key entities that need to be searched in wikipedia to solve the problem. Each entity must be wrapped with @ symbols.
+Please give several key entities that need to be searched in Internet to solve the problem. Each entity must be wrapped with @ symbols.
 For example: @catfish effect@, @broken window effect@, @Shakespeare@.
-If there is no entity in the question that needs to be searched in Wikipedia, you don't have to provide it
+If there is no entity in the question that needs to be searched in Internet, you don't have to provide it
 """,
 "Wiki Searcher":
 """
-You will be given a question and a wikipedia overview of the key entities within it.
+You will be given a question and Internet search overview of the key entities within it.
 Please refer to them step by step to give your answer.
 And point out potential issues in other agent's analysis.
 """,
