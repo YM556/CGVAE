@@ -36,7 +36,7 @@
     },
     {
         "llm_name": "GPT-4o-mini",
-        "external_tool": "Google",
+        "external_tool": "Baidu",
         "external_tool_type": "Search",
         "external_source": "Google",
         "role":"Wiki Searcher"

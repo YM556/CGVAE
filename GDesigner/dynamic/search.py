@@ -7,12 +7,10 @@ class Dysearch(Dytool):
     def __init__(self):
         super().__init__()
         self.search_mode_info_dict = {
-            {
             "Google": "Google is the world's most popular search engine, featuring advanced algorithms, smart suggestions, and vast multilingual content.",
             "Baidu": "Baidu is the top Chinese search engine, known for its strong support for Chinese language, maps, forums, and local services.",
             "DuckDuckGo": "DuckDuckGo is a privacy-first search engine, offering anonymous searching without tracking, ads targeting, or filter bubbles.",
             "Wiki": "Wiki refers to Wikipedia, a user-edited online encyclopedia known for its neutral point of view, openness, and extensive topic coverage."
-            }
         }
         
         # 搜索源描述映射表

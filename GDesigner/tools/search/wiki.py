@@ -25,10 +25,10 @@ class WikiSearch(Search):
         
         return None
         
-    async def search_async(self, query: str) -> str:
+    async def search_async(self, query: str, site: str = None) -> str:
         return await search_wiki(query)
         
-    async def search_batch(self, queries: list[str]) -> list[str]:
+    async def search_batch(self, queries: list[str], site: str = None) -> list[str]:
         tasks = [search_wiki(query) for query in queries]
         return await asyncio.gather(*tasks)
 
