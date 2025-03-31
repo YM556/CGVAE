@@ -69,6 +69,7 @@ class Graph(ABC):
         self.agent_names:List[str] = agent_names
         self.optimized_spatial = optimized_spatial
         self.optimized_temporal = optimized_temporal
+        self.decision_method:str =  decision_method
         self.decision_node:Node = AgentRegistry.get(decision_method, **{"domain":self.domain,"llm_name":self.llm_name})
         self.nodes:Dict[str,Node] = {}
         self.potential_spatial_edges:List[List[str, str]] = []
@@ -405,6 +406,9 @@ class Graph(ABC):
 
         cached = self._cached_feature_groups[group_name]
         print(f"[Graph] 本轮运行使用组合: {group_name}")
+
+        decision_llm = self.all_node_config_groups[group_name][0]['llm_name']
+        self.decision_node = AgentRegistry.get(self.decision_method, **{"domain":self.domain,"llm_name":decision_llm})
 
         self.init_with_node_config(cached["node_config"])
         self.features = cached["features"]

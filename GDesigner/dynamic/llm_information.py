@@ -2,27 +2,27 @@ class Dyllm:
     def __init__(self):
         self.llm_info = {
             # OpenAI 系列
-            "GPT-4.5": """GPT-4.5 is a general-purpose large language model released by OpenAI, designed for complex tasks and multi-modal scenarios.
+            "gpt-4.5": """GPT-4.5 is a general-purpose large language model released by OpenAI, designed for complex tasks and multi-modal scenarios.
             The model has approximately 2 trillion parameters. It demonstrates strong performance in complex reasoning and contextual understanding.
             This model performs exceptionally well in tasks such as programming, mathematics, and language generation and understanding, especially in structured reasoning and code generation.
             """,
-            "GPT-4": """GPT-4 is a high-performance general-purpose model launched by OpenAI, suitable for reasoning, conversation, and generation-intensive applications.
+            "gpt-4": """GPT-4 is a high-performance general-purpose model launched by OpenAI, suitable for reasoning, conversation, and generation-intensive applications.
             The model has approximately 1.76 trillion parameters and supports various multi-modal inputs such as images and text, with excellent contextual understanding.
             It shows outstanding performance in programming, language comprehension, mathematical reasoning, and generation tasks, with notable stability and optimization capabilities.
             """,
-            "GPT-3.5": """GPT-3.5 is a medium-sized language model released by OpenAI, suitable for text generation, conversation, and general language tasks.
+            "gpt-3.5": """GPT-3.5 is a medium-sized language model released by OpenAI, suitable for text generation, conversation, and general language tasks.
             The model has 175 billion parameters and offers a balance between performance and cost-effectiveness.
             It performs well in generation, code writing, and other tasks but is relatively weaker in complex reasoning and mathematical tasks.
             """,
-            "GPT-3.5-turbo": """GPT-3.5-turbo is an optimized version of GPT-3.5, designed for faster response and lower deployment costs.
+            "gpt-3.5-turbo": """GPT-3.5-turbo is an optimized version of GPT-3.5, designed for faster response and lower deployment costs.
             It also has 175 billion parameters, with system-level enhancements to improve inference speed and API call efficiency.
             This model is suitable for daily applications, lightweight programming, and summarization tasks, though it has some limitations in handling complex reasoning.
             """,
-            "GPT-4o": """GPT-4o is a multi-modal optimized model launched by OpenAI that supports input forms such as text, speech, image, and video.
+            "gpt-4o": """GPT-4o is a multi-modal optimized model launched by OpenAI that supports input forms such as text, speech, image, and video.
             The model has about 1.76 trillion parameters and features fast response times and strong multi-modal understanding.
             It performs strongly in generation and understanding tasks across various modalities, while maintaining low latency and high efficiency.
             """,
-            "GPT-4o-mini": """GPT-4o-mini is a lightweight multi-modal model launched by OpenAI, suitable for edge devices and resource-constrained deployments.
+            "gpt-4o-mini": """GPT-4o-mini is a lightweight multi-modal model launched by OpenAI, suitable for edge devices and resource-constrained deployments.
             Its parameter scale is smaller than GPT-4o (exact figures not public), retaining multi-modal capabilities while optimizing for size.
             It performs decently in text generation and language understanding but is less capable in complex reasoning and mathematical tasks.
             """,
