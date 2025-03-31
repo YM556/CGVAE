@@ -7,55 +7,58 @@ class Dysearch(Dytool):
     def __init__(self):
         super().__init__()
         self.search_mode_info_dict = {
-           "Google": "Google是最受欢迎的搜索引擎，适合搜索广泛的信息和资源",
-           "Baidu": "百度是全球最大的中文搜索引擎，适合搜索中文信息和资源",
-           "DuckDuckGo": "DuckDuckGo是隐私保护的搜索引擎，适合搜索特定信息和资源",
-           "Wiki": "Wiki是一个维基百科平台，适合搜索维基百科页面和相关信息", 
+            {
+            "Google": "Google is the world's most popular search engine, featuring advanced algorithms, smart suggestions, and vast multilingual content.",
+            "Baidu": "Baidu is the top Chinese search engine, known for its strong support for Chinese language, maps, forums, and local services.",
+            "DuckDuckGo": "DuckDuckGo is a privacy-first search engine, offering anonymous searching without tracking, ads targeting, or filter bubbles.",
+            "Wiki": "Wiki refers to Wikipedia, a user-edited online encyclopedia known for its neutral point of view, openness, and extensive topic coverage."
+            }
         }
         
         # 搜索源描述映射表
         self.search_source_info_dict = {
-            # 技术社区
-            "stackoverflow": "Stack Overflow是全球最大的程序员问答社区，适合搜索编程问题的解决方案和最佳实践",
-            "github": "GitHub是最大的代码托管平台，适合搜索开源项目、代码示例和技术实现",
-            "medium": "Medium是高质量的技术博客平台，适合搜索深度技术文章和经验分享",
-            "dev": "Dev.to是现代化的开发者社区，提供最新的技术趋势和实践经验",
-            "hashnode": "Hashnode是开发者写作平台，提供个人技术博客和经验分享",
-            
-            # 学术资源
-            "arxiv": "arXiv是最大的预印本论文平台，适合搜索最新的研究论文，特别是计算机科学和人工智能领域",
-            "sciencedirect": "ScienceDirect是Elsevier的主要文献平台，提供高质量的同行评议论文",
-            "springer": "Springer是著名的科技出版商，提供全面的科研文献资源",
-            "ieee": "IEEE是电气电子工程师学会的数据库，适合搜索计算机科学和电子工程领域的论文",
-            "acm": "ACM数字图书馆提供计算机科学领域的权威文献",
-            "nature": "Nature是世界顶级科学期刊，提供突破性研究成果",
-            "science": "Science是顶级科学期刊，提供重要科研发现和综述",
-            
-            # 开发文档
-            "python": "Python官方文档，提供Python语言的标准库和使用指南",
-            "mozilla": "MDN Web文档，提供Web技术的详细文档和教程",
-            "microsoft": "Microsoft Learn平台，提供微软技术栈的学习资源",
-            "aws": "AWS文档，提供亚马逊云服务的官方指南",
-            "google": "Google开发者文档，提供Google各种API和服务的使用指南",
-            
-            # 知识百科
-            "wikipedia": "维基百科是最大的在线百科全书，提供广泛的知识概念解释",
-            "geeksforgeeks": "GeeksforGeeks提供计算机科学教程和面试准备资源",
-            "w3schools": "W3Schools提供Web技术的入门教程和参考",
-            "tutorialspoint": "TutorialsPoint提供各种技术的详细教程",
-            
-            # AI/ML相关
-            "huggingface": "Hugging Face是最大的AI模型和数据集平台，提供最新的AI模型和工具",
-            "pytorch": "PyTorch官方文档，提供深度学习框架的使用指南",
-            "tensorflow": "TensorFlow官方文档，提供机器学习框架的完整文档",
-            "paperswithcode": "Papers with Code提供AI论文及其实现代码",
-            "distill": "Distill提供高质量的机器学习可视化解释文章",
-            
-            # 问答社区
-            "quora": "Quora是国际性问答平台，提供专业人士的见解",
-            "zhihu": "知乎是中文问答社区，提供中文技术讨论和解答",
-            "reddit": "Reddit包含多个专业技术社区，提供最新讨论和资源"
+            # Developer Communities
+            "stackoverflow": "Stack Overflow is the largest Q&A site for developers, offering community-vetted solutions, debugging help, and best practices for programming issues.",
+            "github": "GitHub is the leading code hosting platform where you can find open-source projects, source code, technical documentation, and issue discussions.",
+            "medium": "Medium is a high-quality blogging platform where developers share deep technical articles, tutorials, and personal insights on tools and trends.",
+            "dev": "Dev.to is a modern developer community that provides hands-on tutorials, tech news, and real-world development experiences.",
+            "hashnode": "Hashnode is a developer blogging platform where engineers publish technical blogs and share knowledge within the tech community.",
+
+            # Academic Resources
+            "arxiv": "arXiv is a preprint server offering cutting-edge research papers, especially in computer science, AI, and physics before peer review.",
+            "sciencedirect": "ScienceDirect hosts peer-reviewed scientific papers across disciplines, including computer science, engineering, and life sciences.",
+            "springer": "Springer provides comprehensive academic content, including journals, conference papers, and books in science and engineering.",
+            "ieee": "IEEE Xplore provides access to high-impact research papers, conference proceedings, and standards in electrical engineering and computing.",
+            "acm": "The ACM Digital Library is a premier source for computing research papers, conference proceedings, and technical magazines.",
+            "nature": "Nature publishes groundbreaking scientific discoveries across disciplines, offering access to full research articles and expert reviews.",
+            "science": "Science is a leading scientific journal that features major research findings, overviews, and scientific commentary across disciplines.",
+
+            # Developer Docs
+            "python": "The official Python documentation provides comprehensive references, standard library explanations, tutorials, and usage guidelines.",
+            "mozilla": "MDN Web Docs offers in-depth, beginner-to-advanced documentation and examples for HTML, CSS, JavaScript, and Web APIs.",
+            "microsoft": "Microsoft Learn is a centralized platform with tutorials, documentation, and interactive learning paths for Microsoft technologies.",
+            "aws": "AWS Documentation offers detailed service guides, SDK references, and architecture best practices for Amazon Web Services.",
+            "google": "Google Developers provides official docs, code samples, and API references for Google products like Android, Firebase, and Cloud.",
+
+            # Knowledge Bases
+            "wikipedia": "Wikipedia is a multilingual, crowd-sourced encyclopedia offering concise, neutral explanations of topics from all domains.",
+            "geeksforgeeks": "GeeksforGeeks offers structured tutorials, practice problems, and interview preparation content focused on computer science.",
+            "w3schools": "W3Schools provides beginner-friendly tutorials and interactive examples for learning web development technologies.",
+            "tutorialspoint": "TutorialsPoint covers a wide range of technologies with step-by-step tutorials, reference guides, and theoretical explanations.",
+
+            # AI/ML Resources
+            "huggingface": "Hugging Face hosts pre-trained AI models, datasets, inference tools, and documentation for NLP and machine learning tasks.",
+            "pytorch": "PyTorch documentation provides usage guides, API references, and tutorials for building deep learning models with this framework.",
+            "tensorflow": "TensorFlow offers comprehensive guides, tutorials, and API documentation for building and deploying ML models.",
+            "paperswithcode": "Papers with Code links research papers with implementation code, enabling reproducibility and benchmarking in AI.",
+            "distill": "Distill publishes visually rich, intuitive explanations of complex machine learning concepts with an emphasis on clarity and pedagogy.",
+
+            # Q&A Platforms
+            "quora": "Quora is a global Q&A platform where experts and enthusiasts share insights and experiences on a wide range of topics.",
+            "zhihu": "Zhihu is a Chinese Q&A community offering in-depth discussions, expert answers, and technical problem-solving in Chinese.",
+            "reddit": "Reddit hosts diverse tech-focused communities (subreddits) with discussions, tutorials, and real-world developer experiences."
         }
+
         
         
     def get_info_by_mode(self, mode: str) -> str:
