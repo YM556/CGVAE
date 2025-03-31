@@ -2,41 +2,85 @@ class Dyllm:
     def __init__(self):
         self.llm_info = {
             # OpenAI 系列
-            "GPT-4.5": "GPT-4.5 是 OpenAI 最新一代模型，参数量估计接近 2 万亿，具备增强的推理能力、编程能力提升和更强的多语言支持能力，表现优异，适合多种高复杂度任务。",
-            "GPT-4": "GPT-4 拥有 1.76 万亿参数，具备强大的推理与代码生成能力，并支持多模态输入，能够在复杂对话和多任务处理方面展现优秀表现。",
-            "GPT-3.5": "GPT-3.5 拥有 1750 亿参数，擅长文本生成、代码补全和语言翻译，适用于日常应用和轻量级任务，但在复杂推理方面不如 GPT-4。",
-            "GPT-3.5-turbo": "GPT-3.5-turbo 是 GPT-3.5 的精简版，参数量为 1750 亿，适用于轻量级任务和低资源环境。",
-            "GPT-4o": "GPT-4o 是 OpenAI 推出的优化版模型，参数量为 1.76 万亿，具备更强的推理能力和多语言支持，适合复杂推理任务和多语言应用。",
-            "GPT-4o-mini": "GPT-4o-mini 是 OpenAI 推出的优化版模型，参数量为 1.76 万亿，具备更强的推理能力和多语言支持，适合复杂推理任务和多语言应用。",
-
-            # xAI 系列
-            "Grok-3": "Grok-3 是 xAI 发布的大型语言模型，参数量为 3140 亿，支持实时知识更新、讽刺识别和 X 平台集成，适用于对实时性和语气理解有要求的场景。",
+            "GPT-4.5": """GPT-4.5 is a general-purpose large language model released by OpenAI, designed for complex tasks and multi-modal scenarios.
+            The model has approximately 2 trillion parameters. It demonstrates strong performance in complex reasoning and contextual understanding.
+            This model performs exceptionally well in tasks such as programming, mathematics, and language generation and understanding, especially in structured reasoning and code generation.
+            """,
+            "GPT-4": """GPT-4 is a high-performance general-purpose model launched by OpenAI, suitable for reasoning, conversation, and generation-intensive applications.
+            The model has approximately 1.76 trillion parameters and supports various multi-modal inputs such as images and text, with excellent contextual understanding.
+            It shows outstanding performance in programming, language comprehension, mathematical reasoning, and generation tasks, with notable stability and optimization capabilities.
+            """,
+            "GPT-3.5": """GPT-3.5 is a medium-sized language model released by OpenAI, suitable for text generation, conversation, and general language tasks.
+            The model has 175 billion parameters and offers a balance between performance and cost-effectiveness.
+            It performs well in generation, code writing, and other tasks but is relatively weaker in complex reasoning and mathematical tasks.
+            """,
+            "GPT-3.5-turbo": """GPT-3.5-turbo is an optimized version of GPT-3.5, designed for faster response and lower deployment costs.
+            It also has 175 billion parameters, with system-level enhancements to improve inference speed and API call efficiency.
+            This model is suitable for daily applications, lightweight programming, and summarization tasks, though it has some limitations in handling complex reasoning.
+            """,
+            "GPT-4o": """GPT-4o is a multi-modal optimized model launched by OpenAI that supports input forms such as text, speech, image, and video.
+            The model has about 1.76 trillion parameters and features fast response times and strong multi-modal understanding.
+            It performs strongly in generation and understanding tasks across various modalities, while maintaining low latency and high efficiency.
+            """,
+            "GPT-4o-mini": """GPT-4o-mini is a lightweight multi-modal model launched by OpenAI, suitable for edge devices and resource-constrained deployments.
+            Its parameter scale is smaller than GPT-4o (exact figures not public), retaining multi-modal capabilities while optimizing for size.
+            It performs decently in text generation and language understanding but is less capable in complex reasoning and mathematical tasks.
+            """,
 
             # Meta LLaMA 系列
-            "Llama-3.1-405B": "Llama-3.1-405B 是 Meta 开源的大模型，拥有 4050 亿参数，支持多语言和长上下文处理，适合多轮对话和跨语言任务，推理能力稳定可靠。",
-            "Llama-3.3-70B-Instruct-Turbo": "Llama-3.3-70B-Instruct-Turbo 是 Meta 开源的大模型，拥有 7000 亿参数，支持多语言和长上下文处理，适合多轮对话和跨语言任务，推理能力稳定可靠。",
-            "Llama-3.1-70B-Instruct-Turbo": "Llama-3.1-70B-Instruct-Turbo 是 Meta 开源的大模型，拥有 7000 亿参数，支持多语言和长上下文处理，适合多轮对话和跨语言任务，推理能力稳定可靠。",
-            "Llama-2-13B": "Llama-2-13B 是 Meta 发布的中型开源模型，具有良好的文本生成和推理能力，适合部署在资源受限的服务器上进行本地推理。",
+            "Llama-3.1-405B": """Llama-3.1-405B is a large-scale open-source model released by Meta, designed for multilingual processing and long-context applications.
+            The model has 405 billion parameters, with stable reasoning structures and strong contextual retention ability.
+            It performs very well in language generation, multilingual interaction, and logical reasoning tasks, and also shows good performance in mathematical and programming tasks.""",
+            "Llama-3.3-70B-Instruct-Turbo": """Llama-3.3-70B-Instruct-Turbo is an instruction-tuned model launched by Meta, focused on improving answer accuracy and alignment.
+            With 70 billion parameters, it supports long-context input and multi-turn dialogue optimization, suitable for multilingual usage scenarios.
+            This model performs well in consistent language generation and dialogue. It also has good capabilities in code and mathematical tasks, making it suitable for complex interactions.
+            """,
+            "Llama-3.1-70B-Instruct-Turbo": """Llama-3.1-70B-Instruct-Turbo is a high-performance conversational model launched by Meta, suitable for knowledge Q&A and content generation.
+            With 70 billion parameters, it has strong multilingual understanding and contextual retention capabilities.
+            It excels in language understanding tasks such as generation and comprehension, and also shows good performance in code generation and mathematical reasoning.""",
+            "Llama-2-13B": """Llama-2-13B is a medium-sized open-source model released earlier by Meta, suitable for on-device deployment and lightweight inference applications.
+            The model has 13 billion parameters, with basic language generation and comprehension capabilities, and low resource requirements.
+            It performs well in basic text generation and language tasks but is relatively weaker in complex reasoning and high-difficulty programming tasks.
+            """,
 
             # Google Gemini 系列
-            "Gemini-1.5-Pro": "Gemini 1.5 Pro 是 Google 的多模态模型，具备超长上下文窗口（超过 200K tokens）和跨模态处理能力，适合视频、图像、文本混合任务。",
-            "Gemini-2.0-flash": "Gemini 2.0 Flash 是 Google 推出的新一代模型，具有超长上下文窗口和多模态处理能力，支持视频、图像、文本混合任务。",
+            "Gemini-1.5-Pro": """Gemini-1.5 Pro is a general-purpose multimodal model released by Google DeepMind, supporting unified processing of text, images, audio, and video.
+            The model’s parameter count is not publicly disclosed, but it features an ultra-long context window (over 200K tokens) and advanced cross-modal understanding capabilities.
+            It demonstrates strong performance in multilingual understanding, complex text generation, programming tasks, and mathematical reasoning, making it especially suitable for tasks involving multimodal reasoning.
+            """,
+            "Gemini-2.0-flash": """Gemini-2.0 Flash is a high-performance multimodal model launched by Google, focused on response speed and context processing capabilities.
+            Although the parameter size is undisclosed, it features a long context window and high processing efficiency, making it suitable for latency-sensitive tasks.
+            It performs well in text generation and multimodal input processing. While its performance in mathematics and code reasoning is moderate, it excels in fast response and broad adaptability.
+            """,
             
             # 阿里巴巴 Qwen 系列
-            "QwQ-32B": "QwQ 是 Qwen 系列的推理模型。与传统的指令调优模型相比，QwQ 具备思考和推理能力，能够在下游任务中实现显著增强的性能，尤其是在解决困难问题方面。QwQ-32B 是中型推理模型，能够在与最先进的推理模型（如 DeepSeek-R1、o1-mini）的对比中取得有竞争力的性能。该模型采用 RoPE、SwiGLU、RMSNorm 和 Attention QKV bias 等技术，具有 64 层网络结构和 40 个 Q 注意力头（GQA 架构中 KV 为 8 个）",
-            "Qwen2.5-72B": "Qwen2.5-72B-Instruct 是阿里云发布的最新大语言模型系列之一。该 72B 模型在编码和数学等领域具有显著改进的能力。它支持长达 128K tokens 的上下文。该模型还提供了多语言支持，覆盖超过 29 种语言，包括中文、英文等。模型在指令跟随、理解结构化数据以及生成结构化输出（尤其是 JSON）方面都有显著提升",
-            "Qwen2.5-Coder-32B":"Qwen2.5-Coder-32B-Instruct 是基于 Qwen2.5 开发的代码特定大语言模型。该模型通过 5.5 万亿 tokens 的训练，在代码生成、代码推理和代码修复方面都取得了显著提升。它是当前最先进的开源代码语言模型，编码能力可与 GPT-4 相媲美。模型不仅增强了编码能力，还保持了在数学和通用能力方面的优势，并支持长文本处理",
-            "Qwen1.5-1.8B": "Qwen1.5-1.8B 是轻量级模型，参数仅 18 亿，适合边缘设备和小型本地部署，虽然性能有限，但推理速度快、资源占用低。",
+            "QwQ-32B": """QwQ-32B is a medium-sized reasoning model launched by Alibaba’s Qwen series, with a focus on solving complex problems.
+            The model has 32 billion parameters, using the QQA architecture, integrated with RoPE, SwiGLU, RMSNorm, and Attention QKV Bias technologies.
+            It performs well in language understanding, scientific computing, and structured question answering, and shows solid capabilities in programming and mathematical reasoning. Suitable for high-complexity scenarios.
+            """,
+            "Qwen2.5-72B": """Qwen2.5-72B-Instruct is a large-scale language model released by Alibaba Cloud, focused on instruction-following, multilingual support, and long-context processing.
+            With 72 billion parameters, it supports context lengths up to 128K and is optimized for structured output capabilities.
+            It performs excellently in multilingual processing, language generation, mathematical reasoning, and structured tasks, making it a strong choice for high-performance general-purpose applications.
+            """,
+            "Qwen2.5-Coder-32B":"""Qwen2.5-Coder-32B-Instruct is a code-specialized model launched by Alibaba Cloud, optimized for code generation, understanding, and repair.
+            The model has 32 billion parameters and is trained on 5.5 trillion tokens to enhance programming capabilities while retaining general-purpose functions.
+            It excels in programming-related tasks, offering outstanding comprehensive coding capabilities, and also shows strong performance in mathematics and language understanding.
+            """,
+            "Qwen1.5-1.8B": """Qwen1.5-1.8B is a lightweight model released by Alibaba, suitable for edge deployment and local environment execution.
+            It has 1.8 billion parameters, with a compact structure, fast response, and low resource consumption.
+            It performs well in basic generation and simple dialogue tasks but is relatively weak in mathematical reasoning, programming, and long-context understanding.
+            """,
 
             # DeepSeek 系列
-            "DeepSeek-V3": "DeepSeek-V3 是一款拥有 6710 亿参数的混合专家（MoE）语言模型，采用多头潜在注意力（MLA）和 DeepSeekMoE 架构，结合无辅助损失的负载平衡策略，优化推理和训练效率。通过在 14.8 万亿高质量tokens上预训练，并进行监督微调和强化学习，DeepSeek-V3 在性能上超越其他开源模型，接近领先闭源模型。",
-            "DeepSeek-R1": "DeepSeek-R1 是一款强化学习（RL）驱动的推理模型，解决了模型中的重复性和可读性问题。在 RL 之前，DeepSeek-R1 引入了冷启动数据，进一步优化了推理性能。它在数学、代码和推理任务中与 OpenAI-o1 表现相当，并且通过精心设计的训练方法，提升了整体效果。",
+            "DeepSeek-V3": """DeepSeek-V3 is a high-performance Mixture-of-Experts (MoE) model released by DeepSeek, focused on enhancing reasoning and training efficiency.
+            With a total of 671 billion parameters, it adopts a MoE architecture, along with the MLA attention mechanism and load-balancing optimization strategies.
+            The model performs exceptionally well in programming, mathematics, language generation, and scientific reasoning, offering comprehensive capabilities comparable to top-tier proprietary models.
+            """,
+            "DeepSeek-R1": """DeepSeek-R1 is a reinforcement learning-optimized model introduced by DeepSeek, aimed at reducing repetitive generation and improving output readability.
+            The parameter count is undisclosed. It enhances reasoning ability and task completion through cold-start data and RL fine-tuning methods.
+            This model shows strong performance in code generation, language generation, and mathematical reasoning, especially suitable for scenarios with high-quality generation requirements.
+            """,
 
-            # 01.AI Yi 系列
-            "Yi-34B": "Yi-34B 是 01.AI 推出的中文优化模型，参数量 340 亿，在中文理解和生成任务上表现出色，同时支持英文问答与多轮对话。",
-
-            # 百川 Baichuan 系列
-            "Baichuan2-13B": "Baichuan2-13B 是百川智能推出的中型模型，优化中文语义理解，适用于问答、摘要、搜索等通用任务，参数量为 130 亿。"
         }
 
     def get_llm_feature_information(self, llm_name):
