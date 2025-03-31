@@ -5,7 +5,6 @@ from GDesigner.graph.node import Node
 from GDesigner.agents.agent_registry import AgentRegistry
 from GDesigner.llm.llm_registry import LLMRegistry
 from GDesigner.prompt.prompt_set_registry import PromptSetRegistry
-from GDesigner.tools.search.wiki import search_wiki_main
 from GDesigner.tools.search.search_registry import SearchRegistry
 
 def find_strings_between_pluses(text):
@@ -36,7 +35,7 @@ class AnalyzeAgent(Node):
                 wiki = await search_engine.search_batch(queries)
                 if len(wiki):
                     self.wiki_summary = ".\n".join(wiki)
-                    user_prompt += f"The key entities of the problem are explained in Wikipedia as follows:{self.wiki_summary}"
+                    user_prompt += f"The key entities of the problem are explained as follows:{self.wiki_summary}"
             spatial_str += f"Agent {id}, role is {info['role']}, output is:\n\n {info['output']}\n\n"
         for id, info in temporal_info.items():
             temporal_str += f"Agent {id}, role is {info['role']}, output is:\n\n {info['output']}\n\n"
