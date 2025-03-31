@@ -32,7 +32,7 @@ class AnalyzeAgent(Node):
             if self.role == 'Wiki Searcher' and info['role']=='Knowlegable Expert' and self.external_tool_type == 'Search':
                 queries = find_strings_between_pluses(info['output'])
                 search_engine = SearchRegistry.get(self.external_tool)
-                wiki = await search_engine.search_batch(queries)
+                wiki = await search_engine.search_batch(query=queries, site=self.external_source)
                 if len(wiki):
                     self.wiki_summary = ".\n".join(wiki)
                     user_prompt += f"The key entities of the problem are explained as follows:{self.wiki_summary}"

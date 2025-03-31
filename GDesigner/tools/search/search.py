@@ -59,11 +59,11 @@ class Search(ABC):
         pass
 
     @abstractmethod
-    async def search_async(self, query: str) -> str:
+    async def search_async(self, query: str, site: str = None) -> str:
         """异步搜索方法"""
         pass
 
     @abstractmethod
-    async def search_batch(self, queries: List[str]) -> List[str]:
+    async def search_batch(self, queries: list[str], site: str = None) -> list[str]:
         """批量异步搜索方法"""
         pass
