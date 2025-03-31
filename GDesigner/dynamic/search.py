@@ -62,10 +62,10 @@ class Dysearch(Dytool):
         
         
     def get_info_by_mode(self, mode: str) -> str:
-        return self.search_mode_info_dict.get(mode, f"未知的搜索模式：{mode}。请确认输入是否正确。")
+        return self.search_mode_info_dict.get(mode, f"Unknown search mode: {mode}. Please check your input.")
 
     def get_info_by_source(self, source: str) -> str:
-        return self.search_source_info_dict.get(source, f"未知的搜索源类型：{source}。请确认输入是否正确。")
+        return self.search_source_info_dict.get(source, f"Unknown search source: {source}. Please check your input.")
 
     def get_dynamic_info(self) -> str:
         return "Dysearch 是用于获取搜索引擎/搜索源相关动态信息的工具类。请使用 `get_info_by_source(source)` 方法获取具体描述。"
