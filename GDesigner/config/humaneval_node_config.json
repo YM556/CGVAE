@@ -2,44 +2,44 @@
     "combination_1":[{
             "llm_name": "llama-3-70b",
             "llm_size": "7B",
-            "external_tool": "search_tool_v1",
-            "external_tool_type": "RAG",
-            "external_source": "Wikipedia"
+            "external_tool": "",
+            "external_tool_type": "",
+            "external_source": ""
         },
         {
             "llm_name": "llama-3-70b",
             "llm_size": "6B",
-            "external_tool": "rag_toolkit_v2",
-            "external_tool_type": "RAG",
-            "external_source": "Github"
+            "external_tool": "",
+            "external_tool_type": "",
+            "external_source": ""
         },
         {
             "llm_name": "llama-3-70b",
             "llm_size": "32K",
-            "external_tool": "advanced_rag_engine",
-            "external_tool_type": "RAG",
-            "external_source": "Arxiv"
+            "external_tool": "",
+            "external_tool_type": "",
+            "external_source": ""
         }],
     "combination_2":[{
             "llm_name": "llama-3-70b",
             "llm_size": "7B",
-            "external_tool": "search_tool_v1",
-            "external_tool_type": "RAG",
-            "external_source": "Wikipedia"
+            "external_tool": "",
+            "external_tool_type": "",
+            "external_source": ""
         },
         {
             "llm_name": "llama-3-70b",
             "llm_size": "6B",
-            "external_tool": "rag_toolkit_v2",
-            "external_tool_type": "RAG",
-            "external_source": "Github"
+            "external_tool": "",
+            "external_tool_type": "",
+            "external_source": ""
         },
         {
             "llm_name":"llama-3-70b",
             "llm_size": "32K",
-            "external_tool": "advanced_rag_engine",
-            "external_tool_type": "RAG",
-            "external_source": "Arxiv"
+            "external_tool": "",
+            "external_tool_type": "",
+            "external_source": ""
         }]
 }
 

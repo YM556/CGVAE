@@ -192,11 +192,14 @@ class Graph(ABC):
             external_tool = self.nodes[node_id].external_tool
             external_tool_type = self.nodes[node_id].external_tool_type
             external_source = self.nodes[node_id].external_source
-
-            external_tool_information = ToolRegistry.get(external_tool_type)
-            tool_profile = external_tool_information.get_info_by_mode(external_tool)
-            source_profile = external_tool_information.get_info_by_source(external_source)
-            profile = tool_profile + source_profile
+            
+            if external_tool_type == "":
+                profile = "该agent没有使用外部工具"
+            else:
+                external_tool_information = ToolRegistry.get(external_tool_type)
+                tool_profile = external_tool_information.get_info_by_mode(external_tool)
+                source_profile = external_tool_information.get_info_by_source(external_source)
+                profile = tool_profile + source_profile
             feature = get_sentence_embedding(profile)
             features.append(feature)
 
