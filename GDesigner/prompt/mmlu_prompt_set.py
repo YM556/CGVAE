@@ -7,7 +7,7 @@ from GDesigner.prompt.common import get_combine_materials
 
 
 roles = itertools.cycle(['Knowlegable Expert',
-                         'Wiki Searcher',
+                         'Searcher',
                          'Critic',
                          'Mathematician',
                          'Psychologist',
@@ -22,11 +22,11 @@ ROLE_DESCRIPTION = {
 "Knowlegable Expert":
 """
 You are a knowlegable expert in question answering.
-Please give several key entities that need to be searched in Internet to solve the problem. Each entity must be wrapped with @ symbols.
+Please give 2~4 key entities that need to be searched in Internet to solve the problem. Each entity must be wrapped with @ symbols.
 For example: @catfish effect@, @broken window effect@, @Shakespeare@.
 If there is no entity in the question that needs to be searched in Internet, you don't have to provide it
 """,
-"Wiki Searcher":
+"Searcher":
 """
 You will be given a question and Internet search overview of the key entities within it.
 Please refer to them step by step to give your answer.
@@ -39,13 +39,28 @@ Please point out potential issues in other agent's analysis point by point.
 """,
 "Mathematician":
 """
-You are a mathematician who is good at math games, arithmetic calculation, and long-term planning.
+You are a scientific expert with strong logical thinking and reasoning skills.
+You specialize in mathematics, physics, chemistry, medicine, programming and economics.
+You excel at:
+- Solving complex mathematical problems and proofs
+- Analyzing physical systems and phenomena
+- Understanding chemical reactions and molecular structures
+- Applying medical knowledge and biological principles
+- Writing and debugging computer programs
+- Modeling economic systems and financial markets
+Your answers are always precise, logical and well-reasoned.
 """,
 "Psychologist":
 """
-You are a psychologist.
-You are good at psychology, sociology, and philosophy.
-You give people scientific suggestions that will make them feel better.
+You are a humanities expert with broad knowledge in liberal arts.
+You specialize in:
+- Philosophy and logical reasoning
+- Psychology and cognitive science
+- Sociology and cultural studies
+- Literature and art appreciation
+- History and historical analysis
+Your answers demonstrate deep humanistic insight, critical thinking, and cultural sensitivity.
+You excel at analyzing complex social phenomena and providing well-reasoned perspectives.
 """,
 "Historian":
 """
@@ -77,15 +92,15 @@ You are a liar who only tell lies.
 """,
 }
 
-ROLE_CONNECTION = [ ('Knowlegable Expert','Wiki Searcher'),
-                    ('Wiki Searcher','Critic'),
-                    ('Wiki Searcher','Mathematician'),
-                    ('Wiki Searcher','Psychologist'),
-                    ('Wiki Searcher','Historian'),
-                    ('Wiki Searcher','Doctor'),
-                    ('Wiki Searcher','Lawyer'),
-                    ('Wiki Searcher','Economist'),
-                    ('Wiki Searcher','Programmer'),
+ROLE_CONNECTION = [ ('Knowlegable Expert','Searcher'),
+                    ('Searcher','Critic'),
+                    ('Searcher','Mathematician'),
+                    ('Searcher','Psychologist'),
+                    ('Searcher','Historian'),
+                    ('Searcher','Doctor'),
+                    ('Searcher','Lawyer'),
+                    ('Searcher','Economist'),
+                    ('Searcher','Programmer'),
                     ('Mathematician','Critic'),
                     ('Psychologist','Critic'),
                     ('Historian','Critic'),
@@ -93,30 +108,26 @@ ROLE_CONNECTION = [ ('Knowlegable Expert','Wiki Searcher'),
                     ('Lawyer','Critic'),
                     ('Economist','Critic'),
                     ('Programmer','Critic'),
-                    ('Economist','Lawyer'),
+                    ('Critic','Mathematician'),
                     ('Critic','Psychologist'),
-                    ('Psychologist','Doctor'),
-                    ('Doctor','Historian'),
-                    ('Historian','Knowlegable Expert'),
-                    ('Programmer','Mathematician'),
-                    ('Programmer','Knowlegable Expert'),
-                    ('Mathematician','Programmer'),
-                    ('Programmer','Economist'),
-                    ('Economist','Psychologist'),
-                    ('Psychologist','Knowlegable Expert'),
                     ('Critic','Historian'),
-                    ('Historian','Economist'),
+                    ('Critic','Doctor'),
+                    ('Critic','Lawyer'),
+                    ('Critic','Economist'),
+                    ('Critic','Programmer'),
+                    ('Mathematician','Psychologist'),
+                    ('Psychologist','Doctor'),
+                    ('Programmer','Mathematician'),
+                    ('Programmer','Psychologist'),
+                    ('Psychologist','Programmer'),
+                    ('Mathematician','Programmer'),                    
+                    ('Economist','Programmer'),
+                    ('Economist','Mathematician'),
+                    ('Historian','Knowlegable Expert'),
                     ('Lawyer','Knowlegable Expert'),
-                    ('Doctor','Lawyer'),
-                    ('Mathematician','Doctor'),
-                    ('Economist','Doctor'),
-                    ('Lawyer','Critic'),
-                    ('Psychologist','Lawyer'),
-                    ('Historian','Mathematician'),
-                    ('Programmer','Doctor'),
-                    ('Doctor','Psychologist'),
-                    ('Historian','Programmer'),
-                    ('Critic','Economist')]
+                    ('Economist','Knowlegable Expert'),
+                    ('Programmer','Knowlegable Expert'),
+                    ('Doctor','Knowlegable Expert'),]
 
 @PromptSetRegistry.register('mmlu')
 class MMLUPromptSet(PromptSet):

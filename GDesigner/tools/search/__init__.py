@@ -7,6 +7,7 @@ from GDesigner.tools.search.arXiv import ArxivSearch
 from GDesigner.tools.search.google import GoogleSearch
 from GDesigner.tools.search.baidu import BaiduSearch
 from GDesigner.tools.search.duckduckgo import DuckDuckGoSearch
+from GDesigner.tools.search.wiki import WikiSearch
 
 __all__ = [
     'Search',
@@ -14,5 +15,6 @@ __all__ = [
     'ArxivSearch',
     'GoogleSearch',
     'BaiduSearch',
-    'DuckDuckGoSearch'
+    'DuckDuckGoSearch',
+    'WikiSearch'
 ]

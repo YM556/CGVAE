@@ -6,7 +6,9 @@ import asyncio
 from typing import Union, Literal, List
 import argparse
 import random
+from io import StringIO
 import json
+from datetime import datetime
 
 
 from GDesigner.graph.graph import Graph
@@ -70,48 +72,101 @@ def parse_args():
         
     return args
 
+class ConsoleLogger:
+    def __init__(self, log_file: str):
+        self.original_stdout = sys.stdout
+        self.log_buffer = StringIO()
+        self.log_file = log_file
+        os.makedirs(os.path.dirname(log_file), exist_ok=True)
+        
+        # 创建双输出流（同时输出到终端和缓冲区）
+        self.dual_output = Tee(self.original_stdout, self.log_buffer)
+
+    def __enter__(self):
+        sys.stdout = self.dual_output
+        return self
+        
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        sys.stdout = self.original_stdout
+        self.save_logs()
+        
+    def save_logs(self):
+        try:
+            # 获取并格式化日志内容
+            log_content = self.log_buffer.getvalue()
+            timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            
+            # 使用更易读的日志格式
+            with open(self.log_file, 'a', encoding='utf-8') as f:
+                f.write(f"[{timestamp}] LOG START\n")
+                f.write(log_content)
+                f.write(f"[{timestamp}] LOG END\n\n")
+        except Exception as e:
+            print(f"保存日志失败: {str(e)}", file=self.original_stdout)
+
+class Tee:
+    """双输出流代理类，实现实时输出"""
+    def __init__(self, *outputs):
+        self.outputs = outputs
+        
+    def write(self, text):
+        for output in self.outputs:
+            output.write(text)
+            output.flush()  # 确保实时输出
+            
+    def flush(self):
+        for output in self.outputs:
+            output.flush()
+
 async def main():
     args = parse_args()
     
-    mode = args.mode
-    decision_method = args.decision_method
-    agent_names = [name for name,num in zip(args.agent_names,args.agent_nums) for _ in range(num)]
-    kwargs = get_kwargs(mode,len(agent_names))
-    node_config = get_node_config(args.node_config_file,len(agent_names))
+    # 修改日志文件扩展名为.log
+    log_dir = GDesigner_ROOT / "result" / "mmlu"
+    log_dir.mkdir(exist_ok=True)
+    log_file = log_dir / f"mmlu_{args.phase}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
+    
+    # 保持上下文管理器使用方式不变
+    with ConsoleLogger(str(log_file)) as logger:
+        mode = args.mode
+        decision_method = args.decision_method
+        agent_names = [name for name,num in zip(args.agent_names,args.agent_nums) for _ in range(num)]
+        kwargs = get_kwargs(mode,len(agent_names))
+        node_config = get_node_config(args.node_config_file,len(agent_names))
 
-    limit_questions = 153
-    node_config = get_node_config(args.node_config_file,len(agent_names))
-    
-  
-    download()
-    dataset_train = MMLUDataset('dev')
-    dataset_val = MMLUDataset('val')
-    
-    if args.phase == "train":
-        graph = Graph(domain=args.domain,
-                llm_name=args.llm_name,
-                agent_names=agent_names,
-                decision_method=decision_method,
-                optimized_spatial=args.optimized_spatial,
-                optimized_temporal=args.optimized_temporal,
-                node_kwargs=node_config,
-                allow_random_combination=True,
-                **kwargs)
-        await train(graph=graph,dataset=dataset_train,num_iters=args.num_iterations,num_rounds=args.num_rounds,
-                    lr=args.lr,batch_size=args.batch_size)
+        limit_questions = 153
+        node_config = get_node_config(args.node_config_file,len(agent_names))
         
-    if args.phase == "eval":
-        graph = Graph(domain=args.domain,
-                llm_name=args.llm_name,
-                agent_names=agent_names,
-                decision_method=decision_method,
-                optimized_spatial=args.optimized_spatial,
-                optimized_temporal=args.optimized_temporal,
-                node_kwargs=node_config,
-                allow_random_combination=False,
-                **kwargs)
-        score = await evaluate(graph=graph,dataset=dataset_val,num_rounds=args.num_rounds,limit_questions=limit_questions,eval_batch_size=args.batch_size,eval_group=args.eval_group)
-        print(f"Score: {score}")
+    
+        download()
+        dataset_train = MMLUDataset('dev')
+        dataset_val = MMLUDataset('val')
+        
+        if args.phase == "train":
+            graph = Graph(domain=args.domain,
+                    llm_name=args.llm_name,
+                    agent_names=agent_names,
+                    decision_method=decision_method,
+                    optimized_spatial=args.optimized_spatial,
+                    optimized_temporal=args.optimized_temporal,
+                    node_kwargs=node_config,
+                    allow_random_combination=True,
+                    **kwargs)
+            await train(graph=graph,dataset=dataset_train,num_iters=args.num_iterations,num_rounds=args.num_rounds,
+                        lr=args.lr,batch_size=args.batch_size)
+            
+        if args.phase == "eval":
+            graph = Graph(domain=args.domain,
+                    llm_name=args.llm_name,
+                    agent_names=agent_names,
+                    decision_method=decision_method,
+                    optimized_spatial=args.optimized_spatial,
+                    optimized_temporal=args.optimized_temporal,
+                    node_kwargs=node_config,
+                    allow_random_combination=False,
+                    **kwargs)
+            score = await evaluate(graph=graph,dataset=dataset_val,num_rounds=args.num_rounds,limit_questions=limit_questions,eval_batch_size=args.batch_size,eval_group=args.eval_group)
+            print(f"Score: {score}")  # 现在会实时显示在终端
 
 
 def get_node_config(config_file: str, agents_num: int) -> dict:

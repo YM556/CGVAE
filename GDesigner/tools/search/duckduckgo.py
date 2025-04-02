@@ -4,6 +4,7 @@
 from duckduckgo_search import DDGS
 import asyncio
 import requests
+import random
 from bs4 import BeautifulSoup
 from GDesigner.tools.search.search import Search
 from GDesigner.tools.search.search_registry import SearchRegistry
@@ -59,12 +60,23 @@ class DuckDuckGoSearch(Search):
                 full_query = f"{site_query} {query}"
             else:
                 full_query = query
-
-            with DDGS() as ddgs:
-                results = list(ddgs.text(full_query[:300], max_results=2))
+                
+            # 增加请求间隔和重试机制
+            max_retries = 3
+            retry_delay = 1  # 初始延迟1秒
+            results = []
             
-            if not results:
-                return ''
+            for attempt in range(max_retries):
+                try:
+                    await asyncio.sleep(retry_delay + random.uniform(0, 2))  # 随机等待1-3秒
+                    with DDGS() as ddgs:
+                        results = list(ddgs.text(full_query[:300], max_results=2))
+                    break
+                except Exception as e:
+                    if attempt < max_retries - 1:
+                        retry_delay *= 2  # 指数退避
+                        continue
+                    raise
 
             tasks = [self._get_page_summary(result, query) for result in results]
             summaries = await asyncio.gather(*tasks)
@@ -125,5 +137,5 @@ class DuckDuckGoSearch(Search):
 if __name__ == "__main__":
     search_ddg = DuckDuckGoSearch()
     queries = ["Python", "Asyncio", "LLM"]
-    result = asyncio.run(search_ddg.search_batch(queries))
+    result = asyncio.run(search_ddg.search_batch(queries,"reddit"))
     print(result)

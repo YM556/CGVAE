@@ -94,5 +94,5 @@ async def train(graph:Graph,
         "gcn": graph.gcn.state_dict(),
         "gcn_dynamic": graph.gcn_dynamic.state_dict(),
         "feature_fusion": graph.feature_fusion.state_dict()
-    }, f"{GDesigner_ROOT}/model_weights/mmlu/trained_gcn.pt")
+    }, f"{GDesigner_ROOT}/model_weights/mmlu/trained_gcn_{time.strftime('%Y%m%d_%H%M%S')}_{total_accuracy.get()}.pt")
         
