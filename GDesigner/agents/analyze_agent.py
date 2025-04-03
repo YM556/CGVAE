@@ -18,7 +18,7 @@ class AnalyzeAgent(Node):
         self.prompt_set = PromptSetRegistry.get(domain)
         self.role = self.prompt_set.get_role() if role is None else role
         self.constraint = self.prompt_set.get_analyze_constraint(self.role)
-        self.wiki_summary = ""
+        self.search_summary = ""
         
     async def _process_inputs(self, raw_inputs:Dict[str,str], spatial_info:Dict[str,Dict], temporal_info:Dict[str,Dict], **kwargs)->List[Any]:
         """ To be overriden by the descendant class """
@@ -28,14 +28,14 @@ class AnalyzeAgent(Node):
         spatial_str = ""
         temporal_str = ""
         for id, info in spatial_info.items():
-            # 要求前节点是knoledgable expert，自身是wiki searcher
-            if self.role == 'Wiki Searcher' and info['role']=='Knowlegable Expert' and self.external_tool_type == 'Search':
+            # 要求前节点是knoledgable expert，自身是Searcher
+            if self.role == 'Searcher' and info['role']=='Knowlegable Expert' and self.external_tool_type == 'Search':
                 queries = find_strings_between_pluses(info['output'])
                 search_engine = SearchRegistry.get(self.external_tool)
-                wiki = await search_engine.search_batch(queries)
-                if len(wiki):
-                    self.wiki_summary = ".\n".join(wiki)
-                    user_prompt += f"The key entities of the problem are explained as follows:{self.wiki_summary}"
+                search = await search_engine.search_batch(queries=queries, site=self.external_source)
+                if len(search):
+                    self.search_summary = ".\n".join(search)
+                    user_prompt += f"The key entities of the problem are explained as follows:{self.search_summary}"
             spatial_str += f"Agent {id}, role is {info['role']}, output is:\n\n {info['output']}\n\n"
         for id, info in temporal_info.items():
             temporal_str += f"Agent {id}, role is {info['role']}, output is:\n\n {info['output']}\n\n"
@@ -59,9 +59,9 @@ class AnalyzeAgent(Node):
         system_prompt, user_prompt = await self._process_inputs(input, spatial_info, temporal_info)
         message = [{'role':'system','content':system_prompt},{'role':'user','content':user_prompt}]
         response = await self.llm.agen(message)
-        if self.wiki_summary != "":
-            response += f"\n\n{self.wiki_summary}"
-            self.wiki_summary = ""
+        if self.search_summary != "":
+            response += f"\n\n{self.search_summary}"
+            self.search_summary = ""
         print(f"################system prompt:{system_prompt}")
         print(f"################user prompt:{user_prompt}")
         print(f"################response:{response}")

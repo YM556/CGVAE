@@ -3,6 +3,7 @@
 
 from googlesearch import search
 import asyncio
+import random
 import requests
 from bs4 import BeautifulSoup
 from GDesigner.tools.search.search import Search
@@ -61,9 +62,22 @@ class GoogleSearch(Search):
             else:
                 full_query = query
 
+                        # 增加请求间隔和重试机制
+            max_retries = 3
+            retry_delay = 1  # 初始延迟1秒
+            results = []
             
-            # 获取多个搜索结果
-            results = list(search(full_query[:300], advanced=True, num_results=2))
+            for attempt in range(max_retries):
+                try:
+                    await asyncio.sleep(retry_delay + random.uniform(0, 2))  # 随机等待1-3秒
+                    results = list(search(full_query[:300], advanced=True, num_results=2))
+                    break
+                except Exception as e:
+                    if attempt < max_retries - 1:
+                        retry_delay *= 2  # 指数退避
+                        continue
+                    raise
+            
             tasks = [self._get_page_summary(result, query) for result in results]
             summaries = await asyncio.gather(*tasks)
     

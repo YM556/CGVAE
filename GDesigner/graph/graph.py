@@ -194,7 +194,7 @@ class Graph(ABC):
             external_tool_type = self.nodes[node_id].external_tool_type
             external_source = self.nodes[node_id].external_source
             
-            if external_tool_type == "":
+            if external_tool_type == "" or external_tool_type == None:
                 profile = "该agent没有使用外部工具"
             else:
                 external_tool_information = ToolRegistry.get(external_tool_type)

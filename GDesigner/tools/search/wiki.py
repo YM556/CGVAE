@@ -25,24 +25,24 @@ class WikiSearch(Search):
         
         return None
         
-    async def search_async(self, query: str) -> str:
-        return await search_wiki(query)
+    async def search_async(self, query: str, site: str = None) -> str:
+        return await self.search_wiki(query)
         
-    async def search_batch(self, queries: list[str]) -> list[str]:
-        tasks = [search_wiki(query) for query in queries]
+    async def search_batch(self, queries: list[str], site: str = None) -> list[str]:
+        tasks = [self.search_wiki(query) for query in queries]
         return await asyncio.gather(*tasks)
 
-    async def get_wikipedia_summary(title):
+    async def get_wikipedia_summary(self,title):
         try:
             wikipedia.set_lang("en")
             summ = wikipedia.summary(title)
             return summ
         except wikipedia.exceptions.DisambiguationError as e:
-            return await get_wikipedia_summary(e.options[0])
+            return await self.get_wikipedia_summary(e.options[0])
         except wikipedia.exceptions.PageError:
             return ""
 
-    async def search_wiki(query):
+    async def search_wiki(self,query):
         wikipedia.set_lang("en")
         result = wikipedia.search(query, results=2, suggestion=True)
         print(result)
@@ -51,13 +51,13 @@ class WikiSearch(Search):
         
         if len(result[0]) != 0:
             for res in result[0]:
-                tasks.append(get_wikipedia_summary(res))
+                tasks.append(self.get_wikipedia_summary(res))
             summaries = await asyncio.gather(*tasks)
             for res, summa in zip(result[0], summaries):
                 if len(summa):
                     ret += f"The summary of {res} in Wikipedia is: {summa}\n"
         if result[1] is not None:
-            summa = await get_wikipedia_summary(result[1])
+            summa = await self.get_wikipedia_summary(result[1])
             if len(summa):
                 ret += f"The summary of {result[1]} in Wikipedia is: {summa}\n"
         return ret
